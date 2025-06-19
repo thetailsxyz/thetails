@@ -148,7 +148,7 @@ const filterTabs = [
   { name: "Spline designer", active: false }
 ]
 
-export function Agents() {
+export function Projects() {
   const [searchTerm, setSearchTerm] = React.useState("")
   const [activeTab, setActiveTab] = React.useState("Featured")
   const [showFilters, setShowFilters] = React.useState(false)

@@ -8,6 +8,8 @@ export function SiteHeader({ currentView }: { currentView?: string }) {
         return 'Dashboard'
       case 'chat':
         return 'Chat'
+      case 'playground':
+        return 'Playground'
       case 'projects':
         return 'Projects'
       case 'data-library':

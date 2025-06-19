@@ -8,6 +8,7 @@ import {
   HelpCircleIcon,
   HomeIcon,
   MessageSquareIcon,
+  FlaskConicalIcon,
   SettingsIcon,
 } from "lucide-react"
 
@@ -25,8 +26,8 @@ import {
 } from '@/components/ui/sidebar'
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  currentView?: 'dashboard' | 'chat' | 'projects' | 'data-library'
-  onNavigate?: (view: 'dashboard' | 'chat' | 'projects' | 'data-library') => void
+  currentView?: 'dashboard' | 'chat' | 'playground' | 'projects' | 'data-library'
+  onNavigate?: (view: 'dashboard' | 'chat' | 'playground' | 'projects' | 'data-library') => void
   onNavigateToChat?: () => void
 }
 
@@ -51,6 +52,13 @@ export function AppSidebar({ currentView = 'dashboard', onNavigate, onNavigateTo
         icon: MessageSquareIcon,
         isActive: currentView === 'chat',
         onClick: () => onNavigate?.('chat'),
+      },
+      {
+        title: "Playground",
+        url: "#",
+        icon: FlaskConicalIcon,
+        isActive: currentView === 'playground',
+        onClick: () => onNavigate?.('playground'),
       },
       {
         title: "Projects",
