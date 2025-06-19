@@ -12,6 +12,7 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth()
   const [showAuth, setShowAuth] = useState(false)
+  const [authDismissed, setAuthDismissed] = useState(false)
 
   if (loading) {
     return (
@@ -24,8 +25,26 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     )
   }
 
-  if (!user || showAuth) {
-    return <AuthPage onClose={user ? () => setShowAuth(false) : undefined} />
+  // If user is authenticated, show the app
+  if (user) {
+    return <>{children}</>
+  }
+
+  // If auth was dismissed, show the app without authentication
+  if (authDismissed && !showAuth) {
+    return <>{children}</>
+  }
+
+  // If showAuth is true or auth hasn't been dismissed yet, show auth page
+  if (showAuth || !authDismissed) {
+    return (
+      <AuthPage 
+        onClose={() => {
+          setShowAuth(false)
+          setAuthDismissed(true)
+        }} 
+      />
+    )
   }
 
   return <>{children}</>
