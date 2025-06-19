@@ -3,24 +3,14 @@
 import * as React from "react"
 import {
   ArrowUpCircleIcon,
-  BarChartIcon,
-  CameraIcon,
-  ClipboardListIcon,
+  BriefcaseIcon,
   DatabaseIcon,
-  FileCodeIcon,
-  FileIcon,
-  FileTextIcon,
-  FolderIcon,
   HelpCircleIcon,
   HomeIcon,
-  ListIcon,
-  SearchIcon,
+  MessageSquareIcon,
   SettingsIcon,
-  UsersIcon,
-  BotIcon,
 } from "lucide-react"
 
-import { NavDocuments } from '@/components/nav-documents'
 import { NavMain } from '@/components/nav-main'
 import { NavSecondary } from '@/components/nav-secondary'
 import { NavUser } from '@/components/nav-user'
@@ -35,8 +25,8 @@ import {
 } from '@/components/ui/sidebar'
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  currentView?: 'dashboard' | 'chat' | 'agents' | 'knowledge-base' | 'analytics' | 'integrations'
-  onNavigate?: (view: 'dashboard' | 'chat' | 'agents' | 'knowledge-base' | 'analytics' | 'integrations') => void
+  currentView?: 'dashboard' | 'chat' | 'projects' | 'data-library'
+  onNavigate?: (view: 'dashboard' | 'chat' | 'projects' | 'data-library') => void
   onNavigateToChat?: () => void
 }
 
@@ -56,80 +46,25 @@ export function AppSidebar({ currentView = 'dashboard', onNavigate, onNavigateTo
         onClick: () => onNavigate?.('dashboard'),
       },
       {
-        title: "Agents",
+        title: "Chat",
         url: "#",
-        icon: BotIcon,
-        isActive: currentView === 'agents',
-        onClick: () => onNavigate?.('agents'),
+        icon: MessageSquareIcon,
+        isActive: currentView === 'chat',
+        onClick: () => onNavigate?.('chat'),
       },
       {
-        title: "Knowledge Base",
+        title: "Projects",
+        url: "#",
+        icon: BriefcaseIcon,
+        isActive: currentView === 'projects',
+        onClick: () => onNavigate?.('projects'),
+      },
+      {
+        title: "Data Library",
         url: "#",
         icon: DatabaseIcon,
-        isActive: currentView === 'knowledge-base',
-        onClick: () => onNavigate?.('knowledge-base'),
-      },
-      {
-        title: "Analytics",
-        url: "#",
-        icon: BarChartIcon,
-        isActive: currentView === 'analytics',
-        onClick: () => onNavigate?.('analytics'),
-      },
-      {
-        title: "Integrations",
-        url: "#",
-        icon: SettingsIcon,
-        isActive: currentView === 'integrations',
-        onClick: () => onNavigate?.('integrations'),
-      },
-    ],
-    navClouds: [
-      {
-        title: "Capture",
-        icon: CameraIcon,
-        isActive: true,
-        url: "#",
-        items: [
-          {
-            title: "Active Proposals",
-            url: "#",
-          },
-          {
-            title: "Archived",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Proposal",
-        icon: FileTextIcon,
-        url: "#",
-        items: [
-          {
-            title: "Active Proposals",
-            url: "#",
-          },
-          {
-            title: "Archived",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Prompts",
-        icon: FileCodeIcon,
-        url: "#",
-        items: [
-          {
-            title: "Active Proposals",
-            url: "#",
-          },
-          {
-            title: "Archived",
-            url: "#",
-          },
-        ],
+        isActive: currentView === 'data-library',
+        onClick: () => onNavigate?.('data-library'),
       },
     ],
     navSecondary: [
@@ -139,31 +74,9 @@ export function AppSidebar({ currentView = 'dashboard', onNavigate, onNavigateTo
         icon: SettingsIcon,
       },
       {
-        title: "Get Help",
+        title: "Help & Support",
         url: "#",
         icon: HelpCircleIcon,
-      },
-      {
-        title: "Search",
-        url: "#",
-        icon: SearchIcon,
-      },
-    ],
-    documents: [
-      {
-        name: "Data Library",
-        url: "#",
-        icon: DatabaseIcon,
-      },
-      {
-        name: "Reports",
-        url: "#",
-        icon: ClipboardListIcon,
-      },
-      {
-        name: "Word Assistant",
-        url: "#",
-        icon: FileIcon,
       },
     ],
   }
@@ -187,7 +100,6 @@ export function AppSidebar({ currentView = 'dashboard', onNavigate, onNavigateTo
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} onNavigateToChat={onNavigateToChat} />
-        <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

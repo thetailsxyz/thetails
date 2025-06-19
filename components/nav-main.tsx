@@ -1,6 +1,6 @@
 "use client"
 
-import { MailIcon, PlusCircleIcon, type LucideIcon } from "lucide-react"
+import { PlusCircleIcon, type LucideIcon } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from '@/components/ui/button'
@@ -45,19 +45,6 @@ export function NavMain({
               <PlusCircleIcon />
               <span>Quick Create</span>
             </SidebarMenuButton>
-            <Button
-              size="icon"
-              className={
-                isMobile
-                  ? "h-9 w-9 shrink-0 group-data-[collapsible=icon]:opacity-0 border-sidebar-border bg-transparent text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                  : "h-9 w-9 shrink-0 group-data-[collapsible=icon]:opacity-0"
-              }
-              variant="outline"
-              onClick={onNavigateToChat}
-            >
-              <MailIcon />
-              <span className="sr-only">Inbox</span>
-            </Button>
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>

@@ -4,15 +4,13 @@ import { useState } from 'react'
 import { AppSidebar } from '@/components/app-sidebar'
 import { AiChat } from '@/components/ai-chat'
 import { Homepage } from '@/components/homepage'
-import { Agents } from '@/components/agents'
+import { Projects } from '@/components/projects'
 import { KnowledgeBase } from '@/components/knowledge-base'
-import { Analytics } from '@/components/analytics'
-import { Integrations } from '@/components/integrations'
 import { SiteHeader } from '@/components/site-header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 
 export default function Page() {
-  const [currentView, setCurrentView] = useState<'dashboard' | 'chat' | 'agents' | 'knowledge-base' | 'analytics' | 'integrations'>('dashboard')
+  const [currentView, setCurrentView] = useState<'dashboard' | 'chat' | 'projects' | 'data-library'>('dashboard')
 
   const handleNavigateToChat = () => {
     setCurrentView('chat')
@@ -22,20 +20,12 @@ export default function Page() {
     setCurrentView('dashboard')
   }
 
-  const handleNavigateToAgents = () => {
-    setCurrentView('agents')
+  const handleNavigateToProjects = () => {
+    setCurrentView('projects')
   }
 
-  const handleNavigateToKnowledgeBase = () => {
-    setCurrentView('knowledge-base')
-  }
-
-  const handleNavigateToAnalytics = () => {
-    setCurrentView('analytics')
-  }
-
-  const handleNavigateToIntegrations = () => {
-    setCurrentView('integrations')
+  const handleNavigateToDataLibrary = () => {
+    setCurrentView('data-library')
   }
 
   return (
@@ -55,14 +45,10 @@ export default function Page() {
             <Homepage onNavigateToChat={handleNavigateToChat} />
           ) : currentView === 'chat' ? (
             <AiChat />
-          ) : currentView === 'agents' ? (
-            <Agents />
-          ) : currentView === 'knowledge-base' ? (
+          ) : currentView === 'projects' ? (
+            <Projects />
+          ) : currentView === 'data-library' ? (
             <KnowledgeBase />
-          ) : currentView === 'analytics' ? (
-            <Analytics />
-          ) : currentView === 'integrations' ? (
-            <Integrations />
           ) : (
             <Homepage onNavigateToChat={handleNavigateToChat} />
           )}

@@ -7,15 +7,11 @@ export function SiteHeader({ currentView }: { currentView?: string }) {
       case 'dashboard':
         return 'Dashboard'
       case 'chat':
-        return 'AI Chat'
-      case 'agents':
-        return 'Agents'
-      case 'knowledge-base':
-        return 'Knowledge Base'
-      case 'analytics':
-        return 'Analytics'
-      case 'integrations':
-        return 'Integrations'
+        return 'Chat'
+      case 'projects':
+        return 'Projects'
+      case 'data-library':
+        return 'Data Library'
       default:
         return 'Dashboard'
     }
