@@ -2,352 +2,414 @@
 
 import * as React from "react"
 import { 
-  PlusIcon,
-  FolderIcon,
-  CalendarIcon,
-  UsersIcon,
-  MoreVerticalIcon,
-  StarIcon,
-  ClockIcon,
-  CheckCircleIcon,
-  AlertCircleIcon,
-  PlayIcon,
-  GitBranchIcon
+  SearchIcon,
+  FilterIcon,
+  HeartIcon,
+  EyeIcon,
+  ExternalLinkIcon
 } from "lucide-react"
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 
 const projects = [
   {
     id: 1,
-    name: "Voice Assistant Platform",
-    description: "Building a comprehensive voice assistant platform with multi-language support",
-    status: "active",
-    priority: "high",
-    progress: 75,
-    dueDate: "Dec 15, 2024",
-    team: ["John", "Sarah", "Mike"],
-    tasks: { completed: 18, total: 24 },
-    color: "bg-blue-500"
+    title: "Customer Support Agent",
+    author: "Patrick Tuell",
+    authorAvatar: "🎧",
+    isPro: true,
+    likes: 3,
+    views: 19,
+    category: "Featured",
+    preview: {
+      bgColor: "bg-black",
+      textColor: "text-white",
+      content: "🎧"
+    }
   },
   {
     id: 2,
-    name: "AI Content Generator",
-    description: "Developing an AI-powered content generation tool for marketing teams",
-    status: "active",
-    priority: "medium",
-    progress: 45,
-    dueDate: "Jan 20, 2025",
-    team: ["Emma", "David"],
-    tasks: { completed: 12, total: 20 },
-    color: "bg-green-500"
+    title: "Sales Assistant Bot", 
+    author: "Ariel Jędrzejczak",
+    authorAvatar: "💼",
+    isPro: true,
+    likes: 23,
+    views: 292,
+    category: "Featured",
+    preview: {
+      bgColor: "bg-black",
+      textColor: "text-white",
+      content: "💼"
+    }
   },
   {
     id: 3,
-    name: "Customer Analytics Dashboard",
-    description: "Real-time analytics dashboard for customer behavior insights",
-    status: "completed",
-    priority: "high",
-    progress: 100,
-    dueDate: "Nov 30, 2024",
-    team: ["Alex", "Lisa", "Tom", "Kate"],
-    tasks: { completed: 32, total: 32 },
-    color: "bg-purple-500"
+    title: "Technical Support AI",
+    author: "Chelsea Stewart",
+    authorAvatar: "🔧",
+    isPro: false,
+    likes: 8,
+    views: 36,
+    category: "Featured", 
+    preview: {
+      bgColor: "bg-black",
+      textColor: "text-white",
+      content: "🔧"
+    }
   },
   {
     id: 4,
-    name: "Mobile App Redesign",
-    description: "Complete redesign of the mobile application with improved UX",
-    status: "planning",
-    priority: "medium",
-    progress: 15,
-    dueDate: "Mar 10, 2025",
-    team: ["Sophie", "Ryan"],
-    tasks: { completed: 3, total: 28 },
-    color: "bg-orange-500"
+    title: "Content Creator Agent",
+    author: "Sam Allen",
+    authorAvatar: "✍️",
+    isPro: true,
+    likes: 10,
+    views: 49,
+    category: "Featured",
+    preview: {
+      bgColor: "bg-orange-500",
+      textColor: "text-white",
+      content: "✍️"
+    }
   },
   {
     id: 5,
-    name: "API Integration Suite",
-    description: "Comprehensive API integration suite for third-party services",
-    status: "on-hold",
-    priority: "low",
-    progress: 30,
-    dueDate: "Feb 28, 2025",
-    team: ["Chris"],
-    tasks: { completed: 8, total: 16 },
-    color: "bg-indigo-500"
+    title: "Data Analytics Bot",
+    author: "Maria Garcia",
+    authorAvatar: "📊",
+    isPro: true,
+    likes: 15,
+    views: 87,
+    category: "Web Developer",
+    preview: {
+      bgColor: "bg-blue-600",
+      textColor: "text-white", 
+      content: "📊"
+    }
   },
   {
     id: 6,
-    name: "Security Audit System",
-    description: "Automated security audit and compliance monitoring system",
-    status: "active",
-    priority: "high",
-    progress: 60,
-    dueDate: "Jan 5, 2025",
-    team: ["Maria", "James", "Nina"],
-    tasks: { completed: 15, total: 22 },
-    color: "bg-red-500"
+    title: "Language Learning Tutor",
+    author: "David Kim",
+    authorAvatar: "🌍",
+    isPro: false,
+    likes: 12,
+    views: 64,
+    category: "Content Creator",
+    preview: {
+      bgColor: "bg-green-500",
+      textColor: "text-white",
+      content: "🌍"
+    }
+  },
+  {
+    id: 7,
+    title: "E-commerce Assistant",
+    author: "Lisa Wong",
+    authorAvatar: "🛒",
+    isPro: true,
+    likes: 18,
+    views: 125,
+    category: "Web Developer",
+    preview: {
+      bgColor: "bg-purple-600",
+      textColor: "text-white",
+      content: "🛒"
+    }
+  },
+  {
+    id: 8,
+    title: "Social Media Manager",
+    author: "Alex Thompson",
+    authorAvatar: "📱",
+    isPro: false,
+    likes: 7,
+    views: 43,
+    category: "Content Creator",
+    preview: {
+      bgColor: "bg-pink-500",
+      textColor: "text-white",
+      content: "📱"
+    }
   }
 ]
 
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case 'active':
-      return <PlayIcon className="h-4 w-4 text-green-500" />
-    case 'completed':
-      return <CheckCircleIcon className="h-4 w-4 text-blue-500" />
-    case 'planning':
-      return <ClockIcon className="h-4 w-4 text-yellow-500" />
-    case 'on-hold':
-      return <AlertCircleIcon className="h-4 w-4 text-gray-500" />
-    default:
-      return <FolderIcon className="h-4 w-4 text-gray-500" />
-  }
-}
+const filterTabs = [
+  { name: "Featured", active: true },
+  { name: "Up & Coming", active: false },
+  { name: "Web Developer", active: false },
+  { name: "Content Creator", active: false },
+  { name: "Graphic Designer", active: false },
+  { name: "Motion Designer", active: false },
+  { name: "Product designers", active: false },
+  { name: "Spline designer", active: false }
+]
 
-const getStatusBadge = (status: string) => {
-  const variants = {
-    active: "bg-green-500/10 text-green-500 border-green-500/20",
-    completed: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-    planning: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
-    'on-hold': "bg-gray-500/10 text-gray-500 border-gray-500/20"
-  }
-  
-  return (
-    <Badge variant="outline" className={`${variants[status as keyof typeof variants]} capitalize`}>
-      {getStatusIcon(status)}
-      {status.replace('-', ' ')}
-    </Badge>
-  )
-}
+export function Agents() {
+  const [searchTerm, setSearchTerm] = React.useState("")
+  const [activeTab, setActiveTab] = React.useState("Featured")
+  const [showFilters, setShowFilters] = React.useState(false)
 
-const getPriorityBadge = (priority: string) => {
-  const variants = {
-    high: "bg-red-500/10 text-red-500 border-red-500/20",
-    medium: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
-    low: "bg-green-500/10 text-green-500 border-green-500/20"
-  }
-  
-  return (
-    <Badge variant="outline" className={`${variants[priority as keyof typeof variants]} capitalize`}>
-      {priority}
-    </Badge>
-  )
-}
+  const filteredProjects = projects.filter(project => {
+    const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         project.author.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory = activeTab === "Featured" || project.category === activeTab
+    return matchesSearch && matchesCategory
+  })
 
-export function Projects() {
   return (
-    <div className="flex flex-col h-full w-full max-w-full overflow-hidden">
+    <div className="flex flex-col h-full w-full max-w-full overflow-hidden bg-background">
       {/* Main content area - scrollable */}
-      <div className="flex-1 overflow-y-auto min-h-0 px-4 sm:px-6 lg:px-16 xl:px-24 py-6">
+      <div className="flex-1 overflow-y-auto min-h-0">
         {/* Header Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-medium text-white mb-2">
-                Projects
-              </h1>
-              <p className="text-gray-400">
-                Manage and track your project progress
-              </p>
+        <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <div className="max-w-7xl mx-auto">
+            {/* Top Navigation */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    className="text-sidebar-foreground font-medium hover:bg-sidebar-accent"
+                  >
+                    Projects
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="text-sidebar-foreground/60 font-medium hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                  >
+                    People
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Search Bar */}
+              <div className="relative w-full sm:w-96">
+                <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-sidebar-foreground/40" />
+                <Input
+                  placeholder="Search across 1M+ independents..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-12 pr-4 py-3 bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/40 focus:ring-2 focus:ring-blue-500 focus:border-transparent rounded-full"
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-3">
+
+            {/* Filter Tabs */}
+            <div className="flex items-center gap-4 mb-8 overflow-x-auto">
               <Button
                 variant="outline"
                 size="sm"
-                className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600 hover:border-gray-500"
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80 flex-shrink-0"
               >
-                <GitBranchIcon className="h-4 w-4 mr-2" />
-                Templates
+                <FilterIcon className="h-4 w-4" />
+                Filters
               </Button>
-              <Button
-                size="sm"
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <PlusIcon className="h-4 w-4 mr-2" />
-                New Project
-              </Button>
+              
+              <div className="flex items-center gap-2 overflow-x-auto">
+                {filterTabs.map((tab) => (
+                  <Button
+                    key={tab.name}
+                    variant={activeTab === tab.name ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setActiveTab(tab.name)}
+                    className={`whitespace-nowrap flex-shrink-0 ${
+                      activeTab === tab.name
+                        ? "bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90"
+                        : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                    }`}
+                  >
+                    {tab.name}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <Card className="bg-sidebar border-0 p-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-blue-500 p-2 rounded-lg">
-                  <FolderIcon className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-sidebar-foreground/70 text-sm">Total Projects</p>
-                  <p className="text-sidebar-foreground text-xl font-semibold">6</p>
-                </div>
+            {/* Section Headers */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-xl sm:text-2xl font-bold text-sidebar-foreground">
+                  Projects we love
+                </h2>
+                <Button
+                  variant="ghost"
+                  className="text-sidebar-foreground/60 hover:text-sidebar-foreground text-sm"
+                >
+                  View more
+                </Button>
               </div>
-            </Card>
-            <Card className="bg-sidebar border-0 p-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-green-500 p-2 rounded-lg">
-                  <PlayIcon className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-sidebar-foreground/70 text-sm">Active</p>
-                  <p className="text-sidebar-foreground text-xl font-semibold">3</p>
-                </div>
-              </div>
-            </Card>
-            <Card className="bg-sidebar border-0 p-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-purple-500 p-2 rounded-lg">
-                  <CheckCircleIcon className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-sidebar-foreground/70 text-sm">Completed</p>
-                  <p className="text-sidebar-foreground text-xl font-semibold">1</p>
-                </div>
-              </div>
-            </Card>
-            <Card className="bg-sidebar border-0 p-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-orange-500 p-2 rounded-lg">
-                  <UsersIcon className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-sidebar-foreground/70 text-sm">Team Members</p>
-                  <p className="text-sidebar-foreground text-xl font-semibold">12</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
+              <p className="text-sidebar-foreground/60 text-sm sm:text-base">
+                Standout projects making waves around the web
+              </p>
+            </div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {projects.map((project) => (
-            <Card
-              key={project.id}
-              className="bg-sidebar border-0 hover:bg-sidebar-accent transition-colors cursor-pointer p-6"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className={`${project.color} w-3 h-3 rounded-full flex-shrink-0`} />
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sidebar-foreground font-semibold mb-1">
-                      {project.name}
-                    </h3>
-                    <div className="flex items-center gap-2">
-                      {getStatusBadge(project.status)}
-                      {getPriorityBadge(project.priority)}
+            {/* Projects Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-12">
+              {filteredProjects.slice(0, 4).map((project) => (
+                <Card
+                  key={project.id}
+                  className="group bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/20 transition-all duration-200 cursor-pointer overflow-hidden"
+                >
+                  {/* Project Preview */}
+                  <div className={`${project.preview.bgColor} ${project.preview.textColor} aspect-[4/3] flex items-center justify-center text-4xl sm:text-5xl relative overflow-hidden`}>
+                    <div className="text-6xl sm:text-7xl opacity-80">
+                      {project.preview.content}
+                    </div>
+                    
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    
+                    {/* Action button */}
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm"
+                      >
+                        <ExternalLinkIcon className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-sidebar-foreground/70 hover:text-sidebar-foreground"
-                    >
-                      <MoreVerticalIcon className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Edit Project</DropdownMenuItem>
-                    <DropdownMenuItem>View Details</DropdownMenuItem>
-                    <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                    <DropdownMenuItem>Archive</DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
 
-              <p className="text-sidebar-foreground/70 text-sm mb-4 line-clamp-2">
-                {project.description}
+                  {/* Project Info */}
+                  <div className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-xs text-white font-medium flex-shrink-0">
+                          {project.authorAvatar}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-sidebar-foreground truncate">
+                            {project.author}
+                          </p>
+                          {project.isPro && (
+                            <Badge variant="secondary" className="text-xs mt-1 bg-sidebar-foreground/10 text-sidebar-foreground/70">
+                              PRO
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="flex items-center gap-4 text-xs text-sidebar-foreground/60">
+                      <div className="flex items-center gap-1">
+                        <HeartIcon className="h-3 w-3" />
+                        <span>{project.likes}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <EyeIcon className="h-3 w-3" />
+                        <span>{project.views}</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* Second Section */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-xl sm:text-2xl font-bold text-sidebar-foreground">
+                  AI agent projects using ⚡ Framer
+                </h2>
+                <Button
+                  variant="ghost"
+                  className="text-sidebar-foreground/60 hover:text-sidebar-foreground text-sm"
+                >
+                  View more
+                </Button>
+              </div>
+              <p className="text-sidebar-foreground/60 text-sm sm:text-base">
+                The best modern websites built on the leading web design tool, Framer
               </p>
+            </div>
 
-              {/* Progress Bar */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between text-sm mb-2">
-                  <span className="text-sidebar-foreground/70">Progress</span>
-                  <span className="text-sidebar-foreground">{project.progress}%</span>
-                </div>
-                <div className="w-full bg-sidebar-border rounded-full h-2">
-                  <div 
-                    className={`${project.color} h-2 rounded-full transition-all duration-300`}
-                    style={{ width: `${project.progress}%` }}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2 text-sidebar-foreground/70">
-                    <CalendarIcon className="h-4 w-4" />
-                    <span>Due Date</span>
-                  </div>
-                  <span className="text-sidebar-foreground">{project.dueDate}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2 text-sidebar-foreground/70">
-                    <CheckCircleIcon className="h-4 w-4" />
-                    <span>Tasks</span>
-                  </div>
-                  <span className="text-sidebar-foreground">
-                    {project.tasks.completed}/{project.tasks.total}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2 text-sidebar-foreground/70">
-                    <UsersIcon className="h-4 w-4" />
-                    <span>Team</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {project.team.slice(0, 3).map((member, index) => (
-                      <div
-                        key={index}
-                        className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-xs text-white font-medium"
-                        title={member}
+            {/* Second Projects Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {filteredProjects.slice(4).map((project) => (
+                <Card
+                  key={project.id}
+                  className="group bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/20 transition-all duration-200 cursor-pointer overflow-hidden"
+                >
+                  {/* Project Preview */}
+                  <div className={`${project.preview.bgColor} ${project.preview.textColor} aspect-[4/3] flex items-center justify-center text-4xl sm:text-5xl relative overflow-hidden`}>
+                    <div className="text-6xl sm:text-7xl opacity-80">
+                      {project.preview.content}
+                    </div>
+                    
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    
+                    {/* Action button */}
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm"
                       >
-                        {member[0]}
-                      </div>
-                    ))}
-                    {project.team.length > 3 && (
-                      <div className="w-6 h-6 rounded-full bg-sidebar-border flex items-center justify-center text-xs text-sidebar-foreground/70">
-                        +{project.team.length - 3}
-                      </div>
-                    )}
+                        <ExternalLinkIcon className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-2 mt-4 pt-4 border-t border-sidebar-border">
+                  {/* Project Info */}
+                  <div className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-xs text-white font-medium flex-shrink-0">
+                          {project.authorAvatar}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-sidebar-foreground truncate">
+                            {project.author}
+                          </p>
+                          {project.isPro && (
+                            <Badge variant="secondary" className="text-xs mt-1 bg-sidebar-foreground/10 text-sidebar-foreground/70">
+                              PRO
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="flex items-center gap-4 text-xs text-sidebar-foreground/60">
+                      <div className="flex items-center gap-1">
+                        <HeartIcon className="h-3 w-3" />
+                        <span>{project.likes}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <EyeIcon className="h-3 w-3" />
+                        <span>{project.views}</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* Show message if no results */}
+            {filteredProjects.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-sidebar-foreground/70 mb-4">No projects found matching your criteria.</p>
                 <Button
                   variant="outline"
-                  size="sm"
-                  className="flex-1 bg-transparent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
+                  onClick={() => {
+                    setSearchTerm("")
+                    setActiveTab("Featured")
+                  }}
+                  className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
                 >
-                  <StarIcon className="h-4 w-4 mr-2" />
-                  View
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 bg-transparent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
-                >
-                  <UsersIcon className="h-4 w-4 mr-2" />
-                  Team
+                  Clear filters
                 </Button>
               </div>
-            </Card>
-          ))}
+            )}
+          </div>
         </div>
       </div>
     </div>
