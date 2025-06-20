@@ -16,7 +16,6 @@ import { AuthPage } from '@/components/auth/auth-page'
 
 export function NavMain({
   items,
-  onNavigateToChat,
 }: {
   items: {
     title: string
@@ -25,7 +24,6 @@ export function NavMain({
     isActive?: boolean
     onClick?: () => void
   }[]
-  onNavigateToChat?: () => void
 }) {
   const { isMobile } = useSidebar()
   const [showAuth, setShowAuth] = useState(false)
