@@ -4,7 +4,6 @@ import { PlusCircleIcon, type LucideIcon } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from '@/components/ui/button'
-import { QuickCreate } from '@/components/quick-create'
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -17,6 +16,7 @@ import { AuthPage } from '@/components/auth/auth-page'
 
 export function NavMain({
   items,
+  onNavigate,
 }: {
   items: {
     title: string
@@ -25,36 +25,23 @@ export function NavMain({
     isActive?: boolean
     onClick?: () => void
   }[]
+  onNavigate?: (view: string) => void
 }) {
   const { isMobile } = useSidebar()
   const [showAuth, setShowAuth] = useState(false)
-  const [showQuickCreate, setShowQuickCreate] = useState(false)
 
   if (showAuth) {
     return <AuthPage onClose={() => setShowAuth(false)} />
   }
-
-  if (showQuickCreate) {
-    return (
-      <QuickCreate 
-        onClose={() => setShowQuickCreate(false)}
-        onComplete={() => {
-          setShowQuickCreate(false)
-          // Navigate to playground or show success message
-        }}
-      />
-    )
-  }
-
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
-              onClick={() => setShowQuickCreate(true)}
               tooltip="Quick Create"
               className="min-w-8 bg-sidebar-foreground text-sidebar duration-200 ease-linear hover:bg-sidebar-foreground/90 hover:text-sidebar active:bg-sidebar-foreground/90 active:text-sidebar"
+              onClick={() => onNavigate?.('quick-create')}
             >
               <PlusCircleIcon />
               <span>Quick Create</span>

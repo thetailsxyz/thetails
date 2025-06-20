@@ -12,6 +12,8 @@ export function SiteHeader({ currentView }: { currentView?: string }) {
         return 'Projects'
       case 'data-library':
         return 'Data Library'
+      case 'quick-create':
+        return 'Quick Create'
       default:
         return 'Dashboard'
     }

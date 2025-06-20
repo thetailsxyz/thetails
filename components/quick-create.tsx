@@ -356,17 +356,17 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
   )
 
   return (
-    <div className="fixed inset-0 bg-sidebar z-50 overflow-y-auto">
+    <div className="flex flex-col h-full w-full max-w-full overflow-hidden bg-background">
+      <div className="flex-1 overflow-y-auto min-h-0">
       {/* Header */}
-      <div className="border-b border-sidebar-border bg-sidebar">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="border-b border-sidebar-border bg-background px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
                   <SparklesIcon className="h-4 w-4 text-white" />
                 </div>
-                <h1 className="text-xl font-semibold text-sidebar-foreground">Quick Create</h1>
+                <h1 className="text-xl font-semibold text-white">Quick Create</h1>
               </div>
               
               {/* Progress Steps */}
@@ -378,17 +378,17 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
                         ? 'bg-blue-500 text-white'
                         : step < currentStep
                         ? 'bg-green-500 text-white'
-                        : 'bg-sidebar-accent text-sidebar-foreground/60 border border-sidebar-border'
+                        : 'bg-sidebar-accent text-white/60 border border-sidebar-border'
                     }`}>
                       {step < currentStep ? <CheckIcon className="h-4 w-4" /> : step}
                     </div>
                     <span className={`text-sm ${
-                      step <= currentStep ? 'text-sidebar-foreground' : 'text-sidebar-foreground/60'
+                      step <= currentStep ? 'text-white' : 'text-white/60'
                     }`}>
                       {step === 1 ? 'Plan' : step === 2 ? 'Setup' : 'Personality'}
                     </span>
                     {step < 3 && (
-                      <ArrowRightIcon className="h-4 w-4 text-sidebar-foreground/40 ml-2" />
+                      <ArrowRightIcon className="h-4 w-4 text-white/40 ml-2" />
                     )}
                   </div>
                 ))}
@@ -399,37 +399,36 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+              className="text-white/70 hover:text-white hover:bg-sidebar-accent"
             >
               <XIcon className="h-5 w-5" />
             </Button>
           </div>
         </div>
-      </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {currentStep === 1 && renderStep1()}
         {currentStep === 2 && renderStep2()}
         {currentStep === 3 && renderStep3()}
       </div>
+      </div>
 
       {/* Footer */}
-      <div className="border-t border-sidebar-border bg-sidebar">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="border-t border-sidebar-border bg-background px-4 sm:px-6 lg:px-8 py-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               onClick={handleBack}
               disabled={currentStep === 1}
-              className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+              className="text-white/70 hover:text-white hover:bg-sidebar-accent"
             >
               <ArrowLeftIcon className="h-4 w-4 mr-2" />
               Back
             </Button>
 
             <div className="flex items-center gap-3">
-              <span className="text-sm text-sidebar-foreground/60">
+              <span className="text-sm text-white/60">
                 Step {currentStep} of 3
               </span>
               <Button
@@ -443,7 +442,6 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
             </div>
           </div>
         </div>
-      </div>
     </div>
   )
 }

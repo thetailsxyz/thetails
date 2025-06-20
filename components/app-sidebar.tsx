@@ -25,8 +25,8 @@ import {
 } from '@/components/ui/sidebar'
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  currentView?: 'dashboard' | 'playground' | 'projects' | 'data-library'
-  onNavigate?: (view: 'dashboard' | 'playground' | 'projects' | 'data-library') => void
+  currentView?: 'dashboard' | 'playground' | 'projects' | 'data-library' | 'quick-create'
+  onNavigate?: (view: 'dashboard' | 'playground' | 'projects' | 'data-library' | 'quick-create') => void
 }
 
 export function AppSidebar({ currentView = 'dashboard', onNavigate, ...props }: AppSidebarProps) {
@@ -98,7 +98,7 @@ export function AppSidebar({ currentView = 'dashboard', onNavigate, ...props }: 
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.navMain} onNavigate={onNavigate} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
