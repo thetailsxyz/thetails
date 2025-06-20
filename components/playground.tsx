@@ -3,120 +3,233 @@
 import * as React from "react"
 import { 
   SendIcon, 
-  SparklesIcon, 
-  PaperclipIcon,
-  BookOpenIcon,
-  CodeIcon,
-  GraduationCapIcon
+  RotateCcwIcon,
+  DownloadIcon,
+  SettingsIcon,
+  GridIcon,
+  ListIcon
 } from "lucide-react"
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card } from '@/components/ui/card'
-
-const suggestedQuestions = [
-  "How does AI work?",
-  "Are black holes real?",
-  "How many Rs are in the word \"strawberry\"?",
-  "What is the meaning of life?"
-]
-
-const quickActions = [
-  { icon: SparklesIcon, label: "Create", color: "text-purple-400" },
-  { icon: BookOpenIcon, label: "Explore", color: "text-blue-400" },
-  { icon: CodeIcon, label: "Code", color: "text-green-400" },
-  { icon: GraduationCapIcon, label: "Learn", color: "text-orange-400" }
-]
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Slider } from '@/components/ui/slider'
 
 export function Playground() {
-  const [message, setMessage] = React.useState("")
+  const [userInput, setUserInput] = React.useState("We is going to the market.")
+  const [instructions, setInstructions] = React.useState("Fix the grammar.")
+  const [model, setModel] = React.useState("text-davinci-003")
+  const [temperature, setTemperature] = React.useState([0.56])
+  const [maxLength, setMaxLength] = React.useState([256])
+  const [topP, setTopP] = React.useState([0.9])
+  const [mode, setMode] = React.useState("complete")
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (message.trim()) {
-      // Handle message submission
-      console.log("Sending message:", message)
-      setMessage("")
-    }
+  const handleSubmit = () => {
+    console.log("Submitting:", { userInput, instructions, model, temperature, maxLength, topP })
   }
 
-  const handleQuestionClick = (question: string) => {
-    setMessage(question)
+  const handleReset = () => {
+    setUserInput("")
+    setInstructions("")
   }
 
   return (
-    <div className="flex flex-col h-full w-full max-w-full overflow-hidden">
-      {/* Main content area - scrollable */}
-      <div className="flex-1 flex flex-col items-center justify-center px-3 sm:px-4 py-4 sm:py-6 overflow-y-auto min-h-0">
-        {/* Main heading */}
-        <div className="text-center mb-6 sm:mb-8 w-full">
-          <h1 className="text-2xl sm:text-3xl font-medium text-white mb-4 sm:mb-6 px-2">
-            Welcome to the Playground
-          </h1>
-          
-          {/* Quick action buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-8 px-2">
-            {quickActions.map((action) => (
-              <Button
-                key={action.label}
-                variant="ghost"
-                className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
-              >
-                <action.icon className={`h-3 w-3 sm:h-4 sm:w-4 ${action.color}`} />
-                <span className="hidden xs:inline">{action.label}</span>
-              </Button>
-            ))}
+    <div className="flex h-full w-full max-w-full overflow-hidden bg-background">
+      {/* Left Panel - Input Area */}
+      <div className="flex-1 flex flex-col min-h-0 border-r border-sidebar-border">
+        <div className="flex-1 p-6 space-y-6 overflow-y-auto">
+          {/* Main Input Area */}
+          <div className="space-y-4">
+            <Textarea
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              placeholder="Enter your text here..."
+              className="min-h-[300px] resize-none bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          {/* Instructions Section */}
+          <div className="space-y-3">
+            <Label htmlFor="instructions" className="text-sidebar-foreground font-medium">
+              Instructions
+            </Label>
+            <Textarea
+              id="instructions"
+              value={instructions}
+              onChange={(e) => setInstructions(e.target.value)}
+              placeholder="Enter instructions for the AI..."
+              className="min-h-[120px] resize-none bg-sidebar-accent border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
           </div>
         </div>
 
-        {/* Suggested questions */}
-        <div className="w-full max-w-2xl space-y-2 sm:space-y-3 px-2">
-          {suggestedQuestions.map((question, index) => (
-            <Card
-              key={index}
-              className="bg-background border-border hover:bg-accent/50 transition-colors cursor-pointer"
-              onClick={() => handleQuestionClick(question)}
+        {/* Bottom Action Bar */}
+        <div className="border-t border-sidebar-border p-4 bg-sidebar-accent/50">
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={handleSubmit}
+              className="bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90 font-medium"
             >
-              <div className="p-3 sm:p-4">
-                <p className="text-foreground text-sm sm:text-base">{question}</p>
-              </div>
-            </Card>
-          ))}
+              Submit
+            </Button>
+            <Button
+              onClick={handleReset}
+              variant="ghost"
+              size="icon"
+              className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+            >
+              <RotateCcwIcon className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Chat input - sticky at bottom */}
-      <div className="flex-shrink-0 w-full border-t border-gray-700 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
-          <form onSubmit={handleSubmit} className="relative">
-            <div className="relative">
-              <Input
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Type your message here..."
-                className="w-full bg-sidebar border-sidebar-border text-white placeholder:text-gray-400 pr-16 sm:pr-20 py-3 sm:py-4 text-sm sm:text-base rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 sm:h-8 sm:w-8 text-gray-400 hover:text-white hover:bg-white/10"
-                >
-                  <PaperclipIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                </Button>
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 sm:h-8 sm:w-8 text-gray-400 hover:text-white hover:bg-white/10"
-                  disabled={!message.trim()}
-                >
-                  <SendIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                </Button>
-              </div>
+      {/* Right Panel - Configuration */}
+      <div className="w-80 flex flex-col bg-sidebar-accent/30 min-h-0">
+        <div className="p-6 space-y-6 overflow-y-auto">
+          {/* Mode Selection */}
+          <div className="space-y-3">
+            <Label className="text-sidebar-foreground font-medium">Mode</Label>
+            <div className="flex items-center gap-2 p-1 bg-sidebar-accent rounded-lg">
+              <Button
+                variant={mode === "complete" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setMode("complete")}
+                className={`flex-1 ${
+                  mode === "complete"
+                    ? "bg-sidebar-foreground text-sidebar"
+                    : "text-sidebar-foreground/70 hover:text-sidebar-foreground"
+                }`}
+              >
+                <GridIcon className="h-4 w-4 mr-2" />
+                Complete
+              </Button>
+              <Button
+                variant={mode === "insert" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setMode("insert")}
+                className={`flex-1 ${
+                  mode === "insert"
+                    ? "bg-sidebar-foreground text-sidebar"
+                    : "text-sidebar-foreground/70 hover:text-sidebar-foreground"
+                }`}
+              >
+                <DownloadIcon className="h-4 w-4 mr-2" />
+                Insert
+              </Button>
+              <Button
+                variant={mode === "edit" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setMode("edit")}
+                className={`flex-1 ${
+                  mode === "edit"
+                    ? "bg-sidebar-foreground text-sidebar"
+                    : "text-sidebar-foreground/70 hover:text-sidebar-foreground"
+                }`}
+              >
+                <ListIcon className="h-4 w-4 mr-2" />
+                Edit
+              </Button>
             </div>
-          </form>
+          </div>
+
+          {/* Model Selection */}
+          <div className="space-y-3">
+            <Label htmlFor="model" className="text-sidebar-foreground font-medium">
+              Model
+            </Label>
+            <Select value={model} onValueChange={setModel}>
+              <SelectTrigger className="bg-sidebar-accent border-sidebar-border text-sidebar-foreground">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="text-davinci-003">text-davinci-003</SelectItem>
+                <SelectItem value="text-curie-001">text-curie-001</SelectItem>
+                <SelectItem value="text-babbage-001">text-babbage-001</SelectItem>
+                <SelectItem value="text-ada-001">text-ada-001</SelectItem>
+                <SelectItem value="gpt-3.5-turbo">gpt-3.5-turbo</SelectItem>
+                <SelectItem value="gpt-4">gpt-4</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Temperature */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sidebar-foreground font-medium">Temperature</Label>
+              <span className="text-sm text-sidebar-foreground/70">{temperature[0]}</span>
+            </div>
+            <Slider
+              value={temperature}
+              onValueChange={setTemperature}
+              max={2}
+              min={0}
+              step={0.01}
+              className="w-full"
+            />
+          </div>
+
+          {/* Maximum Length */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sidebar-foreground font-medium">Maximum Length</Label>
+              <span className="text-sm text-sidebar-foreground/70">{maxLength[0]}</span>
+            </div>
+            <Slider
+              value={maxLength}
+              onValueChange={setMaxLength}
+              max={4000}
+              min={1}
+              step={1}
+              className="w-full"
+            />
+          </div>
+
+          {/* Top P */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sidebar-foreground font-medium">Top P</Label>
+              <span className="text-sm text-sidebar-foreground/70">{topP[0]}</span>
+            </div>
+            <Slider
+              value={topP}
+              onValueChange={setTopP}
+              max={1}
+              min={0}
+              step={0.01}
+              className="w-full"
+            />
+          </div>
+
+          {/* Additional Controls */}
+          <div className="pt-4 border-t border-sidebar-border">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+              >
+                <SettingsIcon className="h-4 w-4 mr-2" />
+                Advanced
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+              >
+                <DownloadIcon className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
