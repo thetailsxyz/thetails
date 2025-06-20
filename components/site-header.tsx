@@ -6,8 +6,6 @@ export function SiteHeader({ currentView }: { currentView?: string }) {
     switch (currentView) {
       case 'dashboard':
         return 'Dashboard'
-      case 'chat':
-        return 'Chat'
       case 'playground':
         return 'Playground'
       case 'projects':
