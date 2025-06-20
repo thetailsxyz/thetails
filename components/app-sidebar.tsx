@@ -7,7 +7,6 @@ import {
   DatabaseIcon,
   HelpCircleIcon,
   HomeIcon,
-  MessageSquareIcon,
   FlaskConicalIcon,
   SettingsIcon,
 } from "lucide-react"
@@ -26,12 +25,11 @@ import {
 } from '@/components/ui/sidebar'
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  currentView?: 'dashboard' | 'chat' | 'playground' | 'projects' | 'data-library'
-  onNavigate?: (view: 'dashboard' | 'chat' | 'playground' | 'projects' | 'data-library') => void
-  onNavigateToChat?: () => void
+  currentView?: 'dashboard' | 'playground' | 'projects' | 'data-library'
+  onNavigate?: (view: 'dashboard' | 'playground' | 'projects' | 'data-library') => void
 }
 
-export function AppSidebar({ currentView = 'dashboard', onNavigate, onNavigateToChat, ...props }: AppSidebarProps) {
+export function AppSidebar({ currentView = 'dashboard', onNavigate, ...props }: AppSidebarProps) {
   const data = {
     user: {
       name: "shadcn",
@@ -47,11 +45,11 @@ export function AppSidebar({ currentView = 'dashboard', onNavigate, onNavigateTo
         onClick: () => onNavigate?.('dashboard'),
       },
       {
-        title: "Chat",
+        title: "Projects",
         url: "#",
-        icon: MessageSquareIcon,
-        isActive: currentView === 'chat',
-        onClick: () => onNavigate?.('chat'),
+        icon: BriefcaseIcon,
+        isActive: currentView === 'projects',
+        onClick: () => onNavigate?.('projects'),
       },
       {
         title: "Playground",
@@ -59,13 +57,6 @@ export function AppSidebar({ currentView = 'dashboard', onNavigate, onNavigateTo
         icon: FlaskConicalIcon,
         isActive: currentView === 'playground',
         onClick: () => onNavigate?.('playground'),
-      },
-      {
-        title: "Projects",
-        url: "#",
-        icon: BriefcaseIcon,
-        isActive: currentView === 'projects',
-        onClick: () => onNavigate?.('projects'),
       },
       {
         title: "Data Library",
@@ -107,7 +98,7 @@ export function AppSidebar({ currentView = 'dashboard', onNavigate, onNavigateTo
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} onNavigateToChat={onNavigateToChat} />
+        <NavMain items={data.navMain} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
