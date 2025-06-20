@@ -38,7 +38,6 @@ const productFeatures = [
     title: "Knowledge Base", 
     color: "text-purple-400",
     bgColor: "bg-sidebar",
-    isClickable: true,
     description: "Centralized information management system"
   },
   { 
@@ -158,17 +157,7 @@ const getStatusBadge = (status: string) => {
   )
 }
 
-interface HomepageProps {
-  onNavigateToChat: () => void
-}
-
-export function Homepage({ onNavigateToChat }: HomepageProps) {
-  const handleFeatureClick = (feature: any) => {
-    if (feature.isClickable && feature.title === "Knowledge Base") {
-      onNavigateToChat()
-    }
-  }
-
+export function Homepage() {
   return (
     <div className="flex flex-col h-full w-full max-w-full overflow-hidden">
       {/* Main content area - scrollable */}
@@ -190,15 +179,6 @@ export function Homepage({ onNavigateToChat }: HomepageProps) {
               >
                 <SettingsIcon className="h-4 w-4" />
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600 hover:border-gray-500"
-                onClick={onNavigateToChat}
-              >
-                <MessageSquareIcon className="h-4 w-4 mr-2" />
-                Start Chat
-              </Button>
             </div>
           </div>
 
@@ -207,10 +187,7 @@ export function Homepage({ onNavigateToChat }: HomepageProps) {
             {productFeatures.map((feature, index) => (
               <div key={index} className="flex flex-col items-center">
                 <Card
-                  onClick={() => handleFeatureClick(feature)}
-                  className={`bg-sidebar border-0 hover:bg-sidebar-accent transition-colors p-6 aspect-square flex items-center justify-center w-full ${
-                    feature.isClickable ? 'cursor-pointer' : 'cursor-default'
-                  }`}
+                  className={`bg-sidebar border-0 hover:bg-sidebar-accent transition-colors p-6 aspect-square flex items-center justify-center w-full cursor-default`}
                 >
                   <feature.icon className={`h-8 w-8 ${feature.color}`} />
                 </Card>
