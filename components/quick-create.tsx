@@ -17,7 +17,8 @@ import {
   BookOpenIcon,
   FlaskConicalIcon,
   DatabaseIcon,
-  ArrowUpRightIcon
+  ArrowUpRightIcon,
+  ZapIcon
 } from "lucide-react"
 
 import { Button } from '@/components/ui/button'
@@ -28,60 +29,64 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 
 interface Plan {
-  id: 'hobby' | 'creator' | 'business'
+  id: 'personal' | 'creator' | 'business'
   name: string
   price: number
   description: string
-  credits: string
   features: string[]
   popular?: boolean
   badge?: string
+  buttonText?: string
+  buttonVariant?: 'default' | 'outline' | 'secondary'
 }
 
 const plans: Plan[] = [
   {
-    id: 'hobby',
-    name: 'Hobby',
-    price: 5,
-    description: 'Personal assistant for individual use',
-    credits: '2k credits/month',
+    id: 'personal',
+    name: 'Personal',
+    price: 2,
+    description: 'Perfect for individual creators and personal projects',
     features: [
-      '1 project',
-      '2,000 message credits',
-      'Basic support',
-      'Standard templates'
-    ]
+      '500+ Long Chats',
+      '10,000+ Short Chats',
+      'Standard data templates',
+      'Publicly accessible chatbots',
+      'Analytics feature'
+    ],
+    buttonText: 'Get Started',
+    buttonVariant: 'outline'
   },
   {
     id: 'creator',
     name: 'Creator',
     price: 19,
-    description: 'Monetization engine for content creators',
-    credits: '15k credits/month',
+    description: 'More power for content creators and professionals',
     features: [
-      'All Hobby features',
-      '5 projects',
-      '15,000 message credits',
-      'Website scraping',
-      'Priority support'
+      'Everything in Personal',
+      '2 Project Collaborators',
+      '5,000+ Long Chats',
+      '100,000+ Short Chats',
+      'Image context'
     ],
     popular: true,
-    badge: 'MOST POPULAR'
+    badge: 'POPULAR',
+    buttonText: 'Start Creating',
+    buttonVariant: 'default'
   },
   {
     id: 'business',
     name: 'Business',
-    price: 79,
-    description: 'Enterprise support and collaboration',
-    credits: '60k credits/month',
+    price: 99,
+    description: 'Enterprise features for teams and organizations',
     features: [
-      'All Creator features',
-      'Unlimited projects',
-      '60,000 message credits',
-      'Document uploads',
-      'Invite 3 team members',
-      'Advanced analytics'
-    ]
+      'Everything in Creator plan',
+      '10 Project Collaborators',
+      '50,000+ Long Chats',
+      '1,000,000+ Short Chats',
+      'Priority support'
+    ],
+    buttonText: 'Scale Your Business',
+    buttonVariant: 'outline'
   }
 ]
 
@@ -100,7 +105,7 @@ interface QuickCreateProps {
 
 export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
   const [currentStep, setCurrentStep] = useState(1)
-  const [selectedPlan, setSelectedPlan] = useState<'hobby' | 'creator' | 'business'>('creator')
+  const [selectedPlan, setSelectedPlan] = useState<'personal' | 'creator' | 'business'>('creator')
   const [projectName, setProjectName] = useState('')
   const [description, setDescription] = useState('')
   const [socialLinks, setSocialLinks] = useState<Record<string, string>>({})
@@ -148,59 +153,84 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
   const renderStep1 = () => (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-sidebar-foreground mb-2">Choose Your Plan</h2>
-        <p className="text-sidebar-foreground/70">Select the plan that best fits your needs</p>
+        <h2 className="text-3xl font-bold text-sidebar-foreground mb-3">Choose Your Plan</h2>
+        <p className="text-sidebar-foreground/70 text-lg">Select the plan that best fits your needs</p>
+        
+        {/* Billing Toggle with better spacing */}
+        <div className="flex items-center justify-center gap-6 mt-8">
+          <span className="text-sm text-sidebar-foreground/70 font-medium">Monthly</span>
+          <div className="relative">
+            <div className="w-12 h-6 bg-sidebar-border rounded-full p-1">
+              <div className="w-4 h-4 bg-sidebar-foreground rounded-full transition-transform"></div>
+            </div>
+          </div>
+          <span className="text-sm text-sidebar-foreground/70 font-medium">Annual</span>
+          <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-xs">
+            Save 10%
+          </Badge>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
         {plans.map((plan) => (
           <Card
             key={plan.id}
-            className={`relative p-6 cursor-pointer transition-all duration-200 ${
+            className={`relative p-8 cursor-pointer transition-all duration-300 hover:scale-105 flex flex-col ${
               selectedPlan === plan.id
-                ? 'border-blue-500 bg-blue-500/5'
-                : 'border-sidebar-border bg-sidebar-accent hover:border-sidebar-foreground/20'
-            } ${plan.popular ? 'ring-2 ring-blue-500/20' : ''}`}
+                ? 'border-sidebar-foreground bg-sidebar-foreground/5 shadow-lg shadow-sidebar-foreground/20'
+                : 'border-sidebar-border bg-sidebar-accent hover:border-sidebar-foreground/30 hover:shadow-lg'
+            } ${plan.popular ? 'ring-2 ring-sidebar-foreground/30 scale-105' : ''}`}
             onClick={() => setSelectedPlan(plan.id)}
           >
             {plan.badge && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-blue-600 text-white px-3 py-1 text-xs font-medium">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <Badge className="bg-sidebar-foreground text-sidebar px-4 py-1.5 text-xs font-semibold shadow-lg">
                   {plan.badge}
                 </Badge>
               </div>
             )}
 
-            <div className="text-center mb-6">
-              <h3 className="text-xl font-bold text-sidebar-foreground mb-2">{plan.name}</h3>
-              <p className="text-sidebar-foreground/70 text-sm mb-4">{plan.description}</p>
-              <div className="mb-2">
-                <span className="text-3xl font-bold text-sidebar-foreground">${plan.price}</span>
-                <span className="text-sidebar-foreground/70 ml-1">per month</span>
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-sidebar-foreground mb-3">{plan.name}</h3>
+              <p className="text-sidebar-foreground/70 text-sm mb-6 leading-relaxed">{plan.description}</p>
+              
+              <div className="mb-4">
+                <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-4xl font-bold text-sidebar-foreground">${plan.price}</span>
+                  <span className="text-sidebar-foreground/70 text-lg">/ month</span>
+                </div>
               </div>
-              <p className="text-sidebar-foreground/60 text-sm">{plan.credits}</p>
             </div>
 
-            <div className="space-y-3 mb-6">
+            <div className="space-y-4 mb-8 flex-1">
               {plan.features.map((feature, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <CheckIcon className="h-4 w-4 text-green-500 flex-shrink-0" />
-                  <span className="text-sidebar-foreground/80 text-sm">{feature}</span>
+                <div key={index} className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center mt-0.5">
+                    <CheckIcon className="h-3 w-3 text-green-500" />
+                  </div>
+                  <span className="text-sidebar-foreground/80 text-sm leading-relaxed">{feature}</span>
                 </div>
               ))}
             </div>
 
             <Button
-              className={`w-full ${
+              className={`w-full py-3 font-semibold transition-all duration-200 mt-auto ${
                 selectedPlan === plan.id
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                  ? 'bg-sidebar-foreground hover:bg-sidebar-foreground/90 text-sidebar shadow-lg'
                   : plan.popular
-                  ? 'bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90'
-                  : 'bg-sidebar-accent border border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80'
+                  ? 'bg-sidebar-foreground hover:bg-sidebar-foreground/90 text-sidebar shadow-lg'
+                  : 'bg-sidebar-accent border-2 border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80 hover:border-sidebar-foreground/30'
               }`}
-              variant={selectedPlan === plan.id ? 'default' : 'outline'}
+              variant={selectedPlan === plan.id ? 'default' : plan.buttonVariant}
             >
-              {selectedPlan === plan.id ? 'Selected' : 'Select Plan'}
+              {selectedPlan === plan.id ? (
+                <div className="flex items-center gap-2">
+                  <CheckIcon className="h-4 w-4" />
+                  Selected
+                </div>
+              ) : (
+                plan.buttonText
+              )}
             </Button>
           </Card>
         ))}
@@ -358,8 +388,8 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
             <span className="text-sidebar-foreground font-medium">{plans.find(p => p.id === selectedPlan)?.name}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-sidebar-foreground/70">Monthly Credits:</span>
-            <span className="text-sidebar-foreground font-medium">{plans.find(p => p.id === selectedPlan)?.credits}</span>
+            <span className="text-sidebar-foreground/70">Monthly Price:</span>
+            <span className="text-sidebar-foreground font-medium">${plans.find(p => p.id === selectedPlan)?.price}/month</span>
           </div>
           {Object.keys(socialLinks).filter(key => socialLinks[key]).length > 0 && (
             <div className="pt-2 border-t border-sidebar-border">
@@ -409,7 +439,7 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
             <Button
               onClick={currentStep === 3 ? handleCustomizeProject : handleNext}
               disabled={!canProceed()}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-white hover:bg-gray-100 text-black font-medium"
             >
               {currentStep === 3 ? `Customize ${projectName}` : 'Continue'}
               <ArrowRightIcon className="h-4 w-4 ml-2" />
