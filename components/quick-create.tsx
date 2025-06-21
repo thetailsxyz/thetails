@@ -381,61 +381,6 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
   return (
     <div className="flex flex-col h-full w-full max-w-full overflow-hidden bg-background">
       <div className="flex-1 overflow-y-auto min-h-0">
-        {/* Header with Stepper */}
-        <div className="border-b border-sidebar-border bg-background px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                  <SparklesIcon className="h-4 w-4 text-white" />
-                </div>
-                <h1 className="text-xl font-semibold text-white">Quick Create</h1>
-              </div>
-              
-              {/* Stepper Navigation */}
-              <div className="flex items-center gap-1">
-                <div className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
-                  currentStep >= 1 ? 'bg-blue-500 text-white' : 'bg-gray-600 text-gray-400'
-                }`}>
-                  1
-                </div>
-                <span className={`text-sm mx-2 ${currentStep >= 1 ? 'text-white' : 'text-gray-400'}`}>
-                  Plan
-                </span>
-                <ArrowRightIcon className="h-4 w-4 text-gray-400" />
-                
-                <div className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
-                  currentStep >= 2 ? 'bg-blue-500 text-white' : 'bg-gray-600 text-gray-400'
-                }`}>
-                  2
-                </div>
-                <span className={`text-sm mx-2 ${currentStep >= 2 ? 'text-white' : 'text-gray-400'}`}>
-                  Setup
-                </span>
-                <ArrowRightIcon className="h-4 w-4 text-gray-400" />
-                
-                <div className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
-                  currentStep >= 3 ? 'bg-blue-500 text-white' : 'bg-gray-600 text-gray-400'
-                }`}>
-                  3
-                </div>
-                <span className={`text-sm mx-2 ${currentStep >= 3 ? 'text-white' : 'text-gray-400'}`}>
-                  Guide
-                </span>
-              </div>
-            </div>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="text-white/70 hover:text-white hover:bg-sidebar-accent"
-            >
-              <XIcon className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-
         {/* Content */}
         <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           {currentStep === 1 && renderStep1()}
