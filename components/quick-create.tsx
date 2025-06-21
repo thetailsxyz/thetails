@@ -17,7 +17,6 @@ import {
   BookOpenIcon,
   FlaskConicalIcon,
   DatabaseIcon,
-  PlayIcon,
   ArrowUpRightIcon
 } from "lucide-react"
 
@@ -139,6 +138,11 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
       ...prev,
       [platform]: value
     }))
+  }
+
+  const handleCustomizeProject = () => {
+    // Navigate to Data Library
+    onComplete()
   }
 
   const renderStep1 = () => (
@@ -285,9 +289,8 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
               <DatabaseIcon className="h-6 w-6 text-white" />
             </div>
             <div className="flex-1">
-              <h3 className="text-sidebar-foreground font-semibold mb-2 flex items-center gap-2">
+              <h3 className="text-sidebar-foreground font-semibold mb-2">
                 Add Knowledge to Your AI
-                <ArrowUpRightIcon className="h-4 w-4 text-sidebar-foreground/60" />
               </h3>
               <p className="text-sidebar-foreground/70 text-sm mb-4 leading-relaxed">
                 Visit the <strong>Data Library</strong> to upload documents, add website content, or create custom knowledge bases. This is where you train your AI with specific information.
@@ -317,9 +320,8 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
               <FlaskConicalIcon className="h-6 w-6 text-white" />
             </div>
             <div className="flex-1">
-              <h3 className="text-sidebar-foreground font-semibold mb-2 flex items-center gap-2">
+              <h3 className="text-sidebar-foreground font-semibold mb-2">
                 Test Your Chatbot
-                <ArrowUpRightIcon className="h-4 w-4 text-sidebar-foreground/60" />
               </h3>
               <p className="text-sidebar-foreground/70 text-sm mb-4 leading-relaxed">
                 Use the <strong>Playground</strong> to test your AI chatbot in real-time. Adjust settings, refine responses, and perfect the conversation flow.
@@ -341,37 +343,6 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
             </div>
           </div>
         </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="bg-sidebar border border-sidebar-border rounded-lg p-6">
-        <h4 className="text-sidebar-foreground font-medium mb-4 flex items-center gap-2">
-          <PlayIcon className="h-4 w-4" />
-          Quick Actions
-        </h4>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Button 
-            variant="outline" 
-            className="flex-1 bg-sidebar-accent border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent/80"
-            onClick={() => {
-              // Navigate to Data Library
-              onComplete()
-            }}
-          >
-            <DatabaseIcon className="h-4 w-4 mr-2" />
-            Go to Data Library
-          </Button>
-          <Button 
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={() => {
-              // Navigate to Playground
-              onComplete()
-            }}
-          >
-            <FlaskConicalIcon className="h-4 w-4 mr-2" />
-            Open Playground
-          </Button>
-        </div>
       </div>
 
       {/* Project Summary */}
@@ -488,11 +459,11 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
               Step {currentStep} of 3
             </span>
             <Button
-              onClick={handleNext}
+              onClick={currentStep === 3 ? handleCustomizeProject : handleNext}
               disabled={!canProceed()}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              {currentStep === 3 ? 'Get Started' : 'Continue'}
+              {currentStep === 3 ? `Customize ${projectName}` : 'Continue'}
               <ArrowRightIcon className="h-4 w-4 ml-2" />
             </Button>
           </div>
