@@ -384,7 +384,7 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
         {/* Header with Stepper */}
         <div className="border-b border-sidebar-border bg-background px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
                   <SparklesIcon className="h-4 w-4 text-white" />
@@ -392,33 +392,36 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
                 <h1 className="text-xl font-semibold text-white">Quick Create</h1>
               </div>
               
-              {/* Progress Steps */}
-              <div className="hidden sm:flex items-center gap-4 ml-8">
-                {[
-                  { step: 1, label: 'Plan' },
-                  { step: 2, label: 'Setup' },
-                  { step: 3, label: 'Guide' }
-                ].map((item, index) => (
-                  <div key={item.step} className="flex items-center gap-2">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
-                      item.step === currentStep
-                        ? 'bg-blue-500 text-white'
-                        : item.step < currentStep
-                        ? 'bg-green-500 text-white'
-                        : 'bg-sidebar-accent text-white/60 border border-sidebar-border'
-                    }`}>
-                      {item.step < currentStep ? <CheckIcon className="h-4 w-4" /> : item.step}
-                    </div>
-                    <span className={`text-sm ${
-                      item.step <= currentStep ? 'text-white' : 'text-white/60'
-                    }`}>
-                      {item.label}
-                    </span>
-                    {index < 2 && (
-                      <ArrowRightIcon className="h-4 w-4 text-white/40 ml-2" />
-                    )}
-                  </div>
-                ))}
+              {/* Stepper Navigation */}
+              <div className="flex items-center gap-1">
+                <div className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
+                  currentStep >= 1 ? 'bg-blue-500 text-white' : 'bg-gray-600 text-gray-400'
+                }`}>
+                  1
+                </div>
+                <span className={`text-sm mx-2 ${currentStep >= 1 ? 'text-white' : 'text-gray-400'}`}>
+                  Plan
+                </span>
+                <ArrowRightIcon className="h-4 w-4 text-gray-400" />
+                
+                <div className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
+                  currentStep >= 2 ? 'bg-blue-500 text-white' : 'bg-gray-600 text-gray-400'
+                }`}>
+                  2
+                </div>
+                <span className={`text-sm mx-2 ${currentStep >= 2 ? 'text-white' : 'text-gray-400'}`}>
+                  Setup
+                </span>
+                <ArrowRightIcon className="h-4 w-4 text-gray-400" />
+                
+                <div className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
+                  currentStep >= 3 ? 'bg-blue-500 text-white' : 'bg-gray-600 text-gray-400'
+                }`}>
+                  3
+                </div>
+                <span className={`text-sm mx-2 ${currentStep >= 3 ? 'text-white' : 'text-gray-400'}`}>
+                  Guide
+                </span>
               </div>
             </div>
 
