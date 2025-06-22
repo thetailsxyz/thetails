@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { useAuth } from '@/hooks/use-auth'
 
 export interface Project {
@@ -19,7 +19,7 @@ export function useProjects() {
   const { user } = useAuth()
 
   const fetchProjects = async () => {
-    if (!user) {
+    if (!user || !isSupabaseConfigured || !supabase) {
       setProjects([])
       setLoading(false)
       return
@@ -54,7 +54,7 @@ export function useProjects() {
     plan: 'personal' | 'creator' | 'business'
     social_links?: Record<string, string>
   }) => {
-    if (!user) {
+    if (!user || !isSupabaseConfigured || !supabase) {
       console.error('User not authenticated')
       return { data: null, error: new Error('User not authenticated') }
     }
@@ -123,6 +123,9 @@ export function useProjects() {
   }
 
   const updateProject = async (id: string, updates: Partial<Project>) => {
+    if (!supabase) {
+      return { data: null, error: new Error('Supabase is not configured') }
+    }
     try {
       const { data, error } = await supabase
         .from('projects')
@@ -143,6 +146,9 @@ export function useProjects() {
   }
 
   const deleteProject = async (id: string) => {
+    if (!supabase) {
+      return { error: new Error('Supabase is not configured') }
+    }
     try {
       const { error } = await supabase
         .from('projects')
