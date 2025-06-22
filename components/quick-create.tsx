@@ -155,9 +155,6 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
 
     setIsCreating(true)
     try {
-      console.log('Starting project creation...')
-      console.log('Project data:', { projectName, description, selectedPlan, socialLinks })
-      
       const { data, error } = await createProject({
         name: projectName,
         description: description,
@@ -166,19 +163,14 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
       })
 
       if (error) {
-        console.error('Project creation failed:', error)
         toast.error(`Failed to create project: ${error.message || 'Unknown error'}`)
-        console.error('Project creation error:', error)
         return
       }
 
-      console.log('Project created successfully:', data)
       toast.success(`Project "${projectName}" created successfully!`)
-      onComplete() // Navigate to playground or wherever needed
+      onComplete()
     } catch (error) {
-      console.error('Unexpected error during project creation:', error)
       toast.error('An unexpected error occurred')
-      console.error('Unexpected error:', error)
     } finally {
       setIsCreating(false)
     }

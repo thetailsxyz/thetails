@@ -58,29 +58,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         console.log('Initializing auth...')
         
-        // Get initial session with shorter timeout
+        // Get initial session
         const sessionPromise = supabase.auth.getSession()
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Supabase connection timeout - check your environment variables')), 15000)
-        )
         
         let session = null
         let error = null
         
         try {
-          const result = await Promise.race([
-            sessionPromise,
-            timeoutPromise
-          ]) as any
+          const result = await sessionPromise
           session = result.data?.session
           error = result.error
-        } catch (timeoutError) {
-          console.error('Supabase connection failed:', timeoutError)
-          // Continue without session - app should still work in offline mode
-          if (mounted) {
-            setLoading(false)
-          }
-          return
+        } catch (sessionError) {
+          console.error('Error getting session:', sessionError)
+          error = sessionError
         }
         
         if (error) {
@@ -92,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setSession(session)
           setUser(session?.user ?? null)
           
-          // Only try to fetch profile if we have a user and the profiles table exists
+          // Fetch profile if user exists
           if (session?.user) {
             try {
               const profileData = await fetchProfile(session.user.id)
@@ -101,7 +91,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               }
             } catch (profileError) {
               console.warn('Could not fetch profile, continuing without it:', profileError)
-              // Continue without profile - this is not critical
             }
           }
           
@@ -110,7 +99,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (error) {
         console.error('Error initializing auth:', error)
         if (mounted) {
-          // Stop loading so the app can continue even without auth
           setLoading(false)
         }
       }
@@ -118,50 +106,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     initializeAuth()
 
-    // Listen for auth changes
-    let subscription
-    
-    try {
-      const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-        if (!mounted) return
+    // Listen for auth changes  
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return
 
-        console.log('Auth state changed:', event, session?.user?.email || 'No user')
-        
-        setSession(session)
-        setUser(session?.user ?? null)
-        
-        if (session?.user) {
-          try {
-            const profileData = await fetchProfile(session.user.id)
-            if (mounted) {
-              setProfile(profileData)
-            }
-          } catch (profileError) {
-            console.warn('Could not fetch profile during auth change:', profileError)
-            // Continue without profile
-          }
-        } else {
-          setProfile(null)
-        }
-        
-        if (mounted) {
-          setLoading(false)
-        }
-      })
+      console.log('Auth state changed:', event, session?.user?.email || 'No user')
       
-      subscription = authSubscription
-    } catch (subscriptionError) {
-      console.error('Failed to set up auth state listener:', subscriptionError)
-      // Continue without auth state listening
-    }
+      setSession(session)
+      setUser(session?.user ?? null)
+      
+      if (session?.user) {
+        try {
+          const profileData = await fetchProfile(session.user.id)
+          if (mounted) {
+            setProfile(profileData)
+          }
+        } catch (profileError) {
+          console.warn('Could not fetch profile during auth change:', profileError)
+        }
+      } else {
+        setProfile(null)
+      }
+      
+      if (mounted) {
+        setLoading(false)
+      }
+    })
 
     return () => {
       mounted = false
-      if (subscription) {
-        subscription.unsubscribe()
-      }
+      subscription.unsubscribe()
     }
-  }, []) // No dependencies to prevent infinite loops
+  }, [])
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
