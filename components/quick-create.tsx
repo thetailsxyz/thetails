@@ -17,14 +17,11 @@ export const supabase = createClient(
       persistSession: true,
       autoRefreshToken: true,
     },
-      
-      // Small delay to show success message before navigating
-      setTimeout(() => {
-        onComplete()
-      }, 1000),
+    global: {
       headers: {
         'X-Client-Info': 'supabase-js-web',
       }
+    }
     }
 )
 
