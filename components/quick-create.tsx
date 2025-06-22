@@ -20,6 +20,7 @@ import {
   ArrowUpRightIcon,
   ZapIcon
 } from "lucide-react"
+import { toast } from "sonner"
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -27,6 +28,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
+import { useProjects } from '@/hooks/use-projects'
 
 interface Plan {
   id: 'personal' | 'creator' | 'business'
@@ -109,13 +111,15 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
   const [projectName, setProjectName] = useState('')
   const [description, setDescription] = useState('')
   const [socialLinks, setSocialLinks] = useState<Record<string, string>>({})
+  const [isCreating, setIsCreating] = useState(false)
+  const { createProject } = useProjects()
 
   const handleNext = () => {
-    if (currentStep < 3) {
+    if (currentStep < 2) {
       setCurrentStep(currentStep + 1)
     } else {
-      // Complete the flow
-      onComplete()
+      // Create the project
+      handleCreateProject()
     }
   }
 
@@ -131,8 +135,6 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
         return selectedPlan !== null
       case 2:
         return projectName.trim() !== '' && description.trim() !== ''
-      case 3:
-        return true // Guide step, always can proceed
       default:
         return false
     }
@@ -145,9 +147,35 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
     }))
   }
 
-  const handleCustomizeProject = () => {
-    // Navigate to Data Library
-    onComplete()
+  const handleCreateProject = async () => {
+    if (!projectName.trim() || !description.trim()) {
+      toast.error('Please fill in all required fields')
+      return
+    }
+
+    setIsCreating(true)
+    try {
+      const { data, error } = await createProject({
+        name: projectName,
+        description: description,
+        plan: selectedPlan,
+        social_links: Object.keys(socialLinks).length > 0 ? socialLinks : undefined,
+      })
+
+      if (error) {
+        toast.error('Failed to create project. Please try again.')
+        console.error('Project creation error:', error)
+        return
+      }
+
+      toast.success(`Project "${projectName}" created successfully!`)
+      onComplete() // Navigate to playground or wherever needed
+    } catch (error) {
+      toast.error('An unexpected error occurred')
+      console.error('Unexpected error:', error)
+    } finally {
+      setIsCreating(false)
+    }
   }
 
   const renderStep1 = () => (
@@ -301,112 +329,6 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
     </div>
   )
 
-  const renderStep3 = () => (
-    <div className="space-y-8 max-w-3xl mx-auto">
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-          <CheckIcon className="h-8 w-8 text-white" />
-        </div>
-        <h2 className="text-2xl font-bold text-sidebar-foreground mb-2">Project Created Successfully!</h2>
-        <p className="text-sidebar-foreground/70">Your chatbot project "{projectName}" is ready. Here's how to continue:</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Data Library Guide */}
-        <Card className="bg-sidebar-accent border-sidebar-border p-6 hover:border-sidebar-foreground/20 transition-colors">
-          <div className="flex items-start gap-4">
-            <div className="bg-purple-500 p-3 rounded-lg flex-shrink-0">
-              <DatabaseIcon className="h-6 w-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-sidebar-foreground font-semibold mb-2">
-                Add Knowledge to Your AI
-              </h3>
-              <p className="text-sidebar-foreground/70 text-sm mb-4 leading-relaxed">
-                Visit the <strong>Data Library</strong> to upload documents, add website content, or create custom knowledge bases. This is where you train your AI with specific information.
-              </p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-xs text-sidebar-foreground/60">
-                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                  <span>Upload PDFs, docs, and text files</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-sidebar-foreground/60">
-                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                  <span>Import website content</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-sidebar-foreground/60">
-                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                  <span>Create custom knowledge entries</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Playground Guide */}
-        <Card className="bg-sidebar-accent border-sidebar-border p-6 hover:border-sidebar-foreground/20 transition-colors">
-          <div className="flex items-start gap-4">
-            <div className="bg-blue-500 p-3 rounded-lg flex-shrink-0">
-              <FlaskConicalIcon className="h-6 w-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-sidebar-foreground font-semibold mb-2">
-                Test Your Chatbot
-              </h3>
-              <p className="text-sidebar-foreground/70 text-sm mb-4 leading-relaxed">
-                Use the <strong>Playground</strong> to test your AI chatbot in real-time. Adjust settings, refine responses, and perfect the conversation flow.
-              </p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-xs text-sidebar-foreground/60">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  <span>Real-time conversation testing</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-sidebar-foreground/60">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  <span>Adjust AI parameters</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-sidebar-foreground/60">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  <span>Fine-tune responses</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Project Summary */}
-      <Card className="bg-sidebar-accent border-sidebar-border p-6">
-        <h4 className="text-sidebar-foreground font-medium mb-4">Project Summary</h4>
-        <div className="space-y-3 text-sm">
-          <div className="flex justify-between">
-            <span className="text-sidebar-foreground/70">Project Name:</span>
-            <span className="text-sidebar-foreground font-medium">{projectName}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-sidebar-foreground/70">Plan:</span>
-            <span className="text-sidebar-foreground font-medium">{plans.find(p => p.id === selectedPlan)?.name}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-sidebar-foreground/70">Monthly Price:</span>
-            <span className="text-sidebar-foreground font-medium">${plans.find(p => p.id === selectedPlan)?.price}/month</span>
-          </div>
-          {Object.keys(socialLinks).filter(key => socialLinks[key]).length > 0 && (
-            <div className="pt-2 border-t border-sidebar-border">
-              <span className="text-sidebar-foreground/70 text-xs">Connected Social Links:</span>
-              <div className="flex flex-wrap gap-2 mt-1">
-                {Object.entries(socialLinks).filter(([_, url]) => url).map(([platform, _]) => (
-                  <Badge key={platform} variant="outline" className="text-xs bg-sidebar-foreground/10 text-sidebar-foreground/70 border-sidebar-foreground/20">
-                    {socialPlatforms.find(p => p.id === platform)?.name}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </Card>
-    </div>
-  )
 
   return (
     <div className="flex flex-col h-full w-full max-w-full overflow-hidden bg-background">
@@ -415,7 +337,6 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
         <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           {currentStep === 1 && renderStep1()}
           {currentStep === 2 && renderStep2()}
-          {currentStep === 3 && renderStep3()}
         </div>
       </div>
 
@@ -434,15 +355,15 @@ export function QuickCreate({ onClose, onComplete }: QuickCreateProps) {
 
           <div className="flex items-center gap-3">
             <span className="text-sm text-white/60">
-              Step {currentStep} of 3
+              Step {currentStep} of 2
             </span>
             <Button
-              onClick={currentStep === 3 ? handleCustomizeProject : handleNext}
-              disabled={!canProceed()}
+              onClick={handleNext}
+              disabled={!canProceed() || isCreating}
               className="bg-white hover:bg-gray-100 text-black font-medium"
             >
-              {currentStep === 3 ? `Customize ${projectName}` : 'Continue'}
-              <ArrowRightIcon className="h-4 w-4 ml-2" />
+              {isCreating ? 'Creating...' : currentStep === 2 ? 'Create Project' : 'Continue'}
+              {!isCreating && <ArrowRightIcon className="h-4 w-4 ml-2" />}
             </Button>
           </div>
         </div>

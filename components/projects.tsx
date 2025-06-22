@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { useProjects } from '@/hooks/use-projects'
 
 const projects = [
   {
@@ -139,6 +140,7 @@ const projects = [
 
 const filterTabs = [
   { name: "Featured", active: true },
+  { name: "My Projects", active: false },
   { name: "Up & Coming", active: false },
   { name: "Web Developer", active: false },
   { name: "Content Creator", active: false },
@@ -152,11 +154,37 @@ export function Projects() {
   const [searchTerm, setSearchTerm] = React.useState("")
   const [activeTab, setActiveTab] = React.useState("Featured")
   const [showFilters, setShowFilters] = React.useState(false)
+  const { projects, loading } = useProjects()
 
-  const filteredProjects = projects.filter(project => {
+  // Convert user projects to display format
+  const userProjects = projects.map(project => ({
+    id: project.id,
+    title: project.name,
+    author: "You",
+    authorAvatar: "🤖",
+    isPro: project.plan !== 'personal',
+    likes: 0,
+    views: 0,
+    category: "My Projects",
+    preview: {
+      bgColor: "bg-blue-600",
+      textColor: "text-white",
+      content: "🤖"
+    },
+    description: project.description,
+    plan: project.plan,
+    created_at: project.created_at
+  }))
+
+  // Combine user projects with example projects
+  const allProjects = [...userProjects, ...projects]
+
+  const filteredProjects = allProjects.filter(project => {
     const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          project.author.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = activeTab === "Featured" || project.category === activeTab
+    const matchesCategory = selectedCategory === "Featured" || 
+                           selectedCategory === "My Projects" || 
+                           project.category === selectedCategory
     return matchesSearch && matchesCategory
   })
 
@@ -230,10 +258,85 @@ export function Projects() {
             </div>
 
             {/* Section Headers */}
+            {userProjects.length > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-xl sm:text-2xl font-bold text-sidebar-foreground">
+                    My Projects
+                  </h2>
+                </div>
+                <p className="text-sidebar-foreground/60 text-sm sm:text-base">
+                  Your AI chatbot projects
+                </p>
+              </div>
+            )}
+
+            {/* User Projects Grid */}
+            {userProjects.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-12">
+                {userProjects.map((project) => (
+                  <Card
+                    key={project.id}
+                    className="group bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/20 transition-all duration-200 cursor-pointer overflow-hidden"
+                  >
+                    {/* Project Preview */}
+                    <div className={`${project.preview.bgColor} ${project.preview.textColor} aspect-[4/3] flex items-center justify-center text-4xl sm:text-5xl relative overflow-hidden`}>
+                      <div className="text-6xl sm:text-7xl opacity-80">
+                        {project.preview.content}
+                      </div>
+                      
+                      {/* Hover overlay */}
+                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                      
+                      {/* Action button */}
+                      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8 bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm"
+                        >
+                          <ExternalLinkIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Project Info */}
+                    <div className="p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-xs text-white font-medium flex-shrink-0">
+                            {project.authorAvatar}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-sidebar-foreground truncate">
+                              {project.title}
+                            </p>
+                            <p className="text-xs text-sidebar-foreground/60 truncate">
+                              {project.description}
+                            </p>
+                            {project.isPro && (
+                              <Badge variant="secondary" className="text-xs mt-1 bg-sidebar-foreground/10 text-sidebar-foreground/70">
+                                {project.plan?.toUpperCase()}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="flex items-center gap-4 text-xs text-sidebar-foreground/60">
+                        <span>Created {new Date(project.created_at).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+
             <div className="mb-8">
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-xl sm:text-2xl font-bold text-sidebar-foreground">
-                  Projects we love
+                  {userProjects.length > 0 ? 'Discover More Projects' : 'Projects we love'}
                 </h2>
                 <Button
                   variant="ghost"
@@ -249,7 +352,7 @@ export function Projects() {
 
             {/* Projects Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-12">
-              {filteredProjects.slice(0, 4).map((project) => (
+              {projects.slice(0, 4).map((project) => (
                 <Card
                   key={project.id}
                   className="group bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/20 transition-all duration-200 cursor-pointer overflow-hidden"
@@ -331,7 +434,7 @@ export function Projects() {
 
             {/* Second Projects Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-              {filteredProjects.slice(4).map((project) => (
+              {projects.slice(4).map((project) => (
                 <Card
                   key={project.id}
                   className="group bg-sidebar-accent border-sidebar-border hover:border-sidebar-foreground/20 transition-all duration-200 cursor-pointer overflow-hidden"
@@ -394,7 +497,7 @@ export function Projects() {
             </div>
 
             {/* Show message if no results */}
-            {filteredProjects.length === 0 && (
+            {allProjects.length === 0 && !loading && (
               <div className="text-center py-12">
                 <p className="text-sidebar-foreground/70 mb-4">No projects found matching your criteria.</p>
                 <Button
@@ -407,6 +510,14 @@ export function Projects() {
                 >
                   Clear filters
                 </Button>
+              </div>
+            )}
+
+            {/* Loading state */}
+            {loading && (
+              <div className="text-center py-12">
+                <div className="w-8 h-8 border-2 border-sidebar-foreground border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-sidebar-foreground/70">Loading projects...</p>
               </div>
             )}
           </div>

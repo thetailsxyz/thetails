@@ -38,6 +38,38 @@ export type Database = {
           updated_at?: string
         }
       }
+      projects: {
+        Row: {
+          id: string
+          name: string
+          description: string
+          plan: 'personal' | 'creator' | 'business'
+          social_links: Record<string, string> | null
+          user_id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description: string
+          plan: 'personal' | 'creator' | 'business'
+          social_links?: Record<string, string> | null
+          user_id: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string
+          plan?: 'personal' | 'creator' | 'business'
+          social_links?: Record<string, string> | null
+          user_id?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
   }
 }
