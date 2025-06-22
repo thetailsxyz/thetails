@@ -16,7 +16,7 @@ export interface Project {
 export function useProjects() {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
-  const { user } = useAuth()
+  const { user, session } = useAuth()
 
   const fetchProjects = async () => {
     if (!user) {
@@ -54,8 +54,13 @@ export function useProjects() {
     plan: 'personal' | 'creator' | 'business'
     social_links?: Record<string, string>
   }) => {
+    console.log('Creating project - User:', user?.id, 'Session:', !!session)
+    
+    // Wait for auth to be ready if still loading
     if (!user) {
-      return { data: null, error: new Error('User not authenticated') }
+      const error = new Error('Please sign in to create a project.')
+      console.error('Authentication required:', error.message)
+      return { data: null, error }
     }
 
     try {
@@ -73,36 +78,77 @@ export function useProjects() {
         user_id: user.id,
       }
 
+      console.log('Inserting project data:', insertData)
+
+      // Use a more robust insert with better error handling
       const { data, error } = await supabase
         .from('projects')
-        .insert(insertData)
+        .insert([insertData])
         .select()
         .single()
 
       if (error) {
-        console.error('Error creating project:', error)
-        return { data: null, error }
+        console.error('Supabase insert error:', error)
+        
+        // Provide more specific error messages based on error codes
+        if (error.code === 'PGRST301' || error.message.includes('permission')) {
+          return { data: null, error: new Error('Permission denied. Please sign in and try again.') }
+        } else if (error.code === '23505') {
+          return { data: null, error: new Error('A project with this name already exists.') }
+        } else if (error.code === '23503') {
+          return { data: null, error: new Error('Invalid user reference. Please sign in again.') }
+        } else if (error.message.includes('JWT')) {
+          return { data: null, error: new Error('Session expired. Please sign in again.') }
+        } else {
+          return { data: null, error: new Error(`Failed to create project: ${error.message}`) }
+        }
       }
+      
+      if (!data) {
+        return { data: null, error: new Error('Project creation failed - no data returned') }
+      }
+      
+      console.log('Project created successfully:', data)
       
       // Update local state
       setProjects(prev => [data, ...prev])
       return { data, error: null }
-    } catch (error) {
-      console.error('Error creating project:', error)
-      return { data: null, error }
+    } catch (error: any) {
+      console.error('Unexpected error creating project:', error)
+      
+      // Handle network errors
+      if (error.message.includes('fetch')) {
+        return { 
+          data: null, 
+          error: new Error('Network error. Please check your internet connection and try again.') 
+        }
+      }
+      
+      return { 
+        data: null, 
+        error: new Error(`Failed to create project: ${error.message || 'Unknown error'}`) 
+      }
     }
   }
 
   const updateProject = async (id: string, updates: Partial<Project>) => {
+    if (!user) {
+      return { data: null, error: new Error('Please sign in to update projects.') }
+    }
+
     try {
       const { data, error } = await supabase
         .from('projects')
         .update(updates)
         .eq('id', id)
+        .eq('user_id', user.id) // Ensure user owns the project
         .select()
         .single()
 
-      if (error) throw error
+      if (error) {
+        console.error('Error updating project:', error)
+        return { data: null, error }
+      }
 
       // Update local state
       setProjects(prev => prev.map(p => p.id === id ? data : p))
@@ -114,13 +160,21 @@ export function useProjects() {
   }
 
   const deleteProject = async (id: string) => {
+    if (!user) {
+      return { error: new Error('Please sign in to delete projects.') }
+    }
+
     try {
       const { error } = await supabase
         .from('projects')
         .delete()
         .eq('id', id)
+        .eq('user_id', user.id) // Ensure user owns the project
 
-      if (error) throw error
+      if (error) {
+        console.error('Error deleting project:', error)
+        return { error }
+      }
 
       // Update local state
       setProjects(prev => prev.filter(p => p.id !== id))
