@@ -58,16 +58,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         console.log('Initializing auth...')
         
-        // Get initial session with timeout
+        // Get initial session with shorter timeout
         const sessionPromise = supabase.auth.getSession()
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session timeout')), 10000)
+          setTimeout(() => reject(new Error('Supabase connection timeout - check your environment variables')), 5000)
         )
         
-        const { data: { session }, error } = await Promise.race([
-          sessionPromise,
-          timeoutPromise
-        ]) as any
+        let session = null
+        let error = null
+        
+        try {
+          const result = await Promise.race([
+            sessionPromise,
+            timeoutPromise
+          ]) as any
+          session = result.data?.session
+          error = result.error
+        } catch (timeoutError) {
+          console.error('Supabase connection failed:', timeoutError)
+          // Continue without session - app should still work in offline mode
+          if (mounted) {
+            setLoading(false)
+          }
+          return
+        }
         
         if (error) {
           console.error('Error getting session:', error)
@@ -96,7 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (error) {
         console.error('Error initializing auth:', error)
         if (mounted) {
-          // Even if there's an error, stop loading so the app can continue
+          // Stop loading so the app can continue even without auth
           setLoading(false)
         }
       }
@@ -105,36 +119,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initializeAuth()
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return
+    let subscription
+    
+    try {
+      const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (!mounted) return
 
-      console.log('Auth state changed:', event, session?.user?.email || 'No user')
-      
-      setSession(session)
-      setUser(session?.user ?? null)
-      
-      if (session?.user) {
-        try {
-          const profileData = await fetchProfile(session.user.id)
-          if (mounted) {
-            setProfile(profileData)
+        console.log('Auth state changed:', event, session?.user?.email || 'No user')
+        
+        setSession(session)
+        setUser(session?.user ?? null)
+        
+        if (session?.user) {
+          try {
+            const profileData = await fetchProfile(session.user.id)
+            if (mounted) {
+              setProfile(profileData)
+            }
+          } catch (profileError) {
+            console.warn('Could not fetch profile during auth change:', profileError)
+            // Continue without profile
           }
-        } catch (profileError) {
-          console.warn('Could not fetch profile during auth change:', profileError)
-          // Continue without profile
+        } else {
+          setProfile(null)
         }
-      } else {
-        setProfile(null)
-      }
+        
+        if (mounted) {
+          setLoading(false)
+        }
+      })
       
-      if (mounted) {
-        setLoading(false)
-      }
-    })
+      subscription = authSubscription
+    } catch (subscriptionError) {
+      console.error('Failed to set up auth state listener:', subscriptionError)
+      // Continue without auth state listening
+    }
 
     return () => {
       mounted = false
-      subscription.unsubscribe()
+      if (subscription) {
+        subscription.unsubscribe()
+      }
     }
   }, []) // No dependencies to prevent infinite loops
 
