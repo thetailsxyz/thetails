@@ -51,6 +51,9 @@ export function useProjects() {
     if (!user) throw new Error('User not authenticated')
 
     try {
+      console.log('Creating project with data:', projectData)
+      console.log('User ID:', user.id)
+      
       const { data, error } = await supabase
         .from('projects')
         .insert({
@@ -60,8 +63,12 @@ export function useProjects() {
         .select()
         .single()
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error creating project:', error)
+        throw error
+      }
       
+      console.log('Project created successfully:', data)
       // Update local state
       setProjects(prev => [data, ...prev])
       return { data, error: null }
