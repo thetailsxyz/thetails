@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Get initial session with shorter timeout
         const sessionPromise = supabase.auth.getSession()
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Supabase connection timeout - check your environment variables')), 5000)
+          setTimeout(() => reject(new Error('Supabase connection timeout - check your environment variables')), 15000)
         )
         
         let session = null
