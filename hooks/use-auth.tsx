@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 interface Profile {
   id: string
@@ -55,20 +55,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let mounted = true
 
     const initializeAuth = async () => {
-      // Check if Supabase is properly configured
-      if (!isSupabaseConfigured || !supabase) {
-        console.warn('Supabase is not configured. Running in offline mode.')
-        if (mounted) {
-          setLoading(false)
-        }
-        return
-      }
-
       try {
         console.log('Initializing auth...')
         
-        // Get initial session
-        const { data: { session }, error } = await supabase.auth.getSession()
+        // Get initial session with shorter timeout
+        const sessionPromise = supabase.auth.getSession()
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Supabase connection timeout - check your environment variables')), 15000)
+        )
+        
+        let session = null
+        let error = null
+        
+        try {
+          const result = await Promise.race([
+            sessionPromise,
+            timeoutPromise
+          ]) as any
+          session = result.data?.session
+          error = result.error
+        } catch (timeoutError) {
+          console.error('Supabase connection failed:', timeoutError)
+          // Continue without session - app should still work in offline mode
+          if (mounted) {
+            setLoading(false)
+          }
+          return
+        }
         
         if (error) {
           console.error('Error getting session:', error)
@@ -151,9 +164,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []) // No dependencies to prevent infinite loops
 
   const signIn = async (email: string, password: string) => {
-    if (!supabase) {
-      return { error: new Error('Supabase is not configured') as AuthError }
-    }
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -162,9 +172,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string, fullName?: string) => {
-    if (!supabase) {
-      return { error: new Error('Supabase is not configured') as AuthError }
-    }
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -178,9 +185,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signInWithGoogle = async () => {
-    if (!supabase) {
-      return { error: new Error('Supabase is not configured') as AuthError }
-    }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -191,17 +195,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
-    if (!supabase) {
-      return { error: new Error('Supabase is not configured') as AuthError }
-    }
     const { error } = await supabase.auth.signOut()
     return { error }
   }
 
   const resetPassword = async (email: string) => {
-    if (!supabase) {
-      return { error: new Error('Supabase is not configured') as AuthError }
-    }
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     })

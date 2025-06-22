@@ -3,24 +3,15 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-// Validate environment variables
-const hasValidConfig = supabaseUrl && supabaseAnonKey && 
-  supabaseUrl !== 'your_supabase_project_url' && 
-  supabaseAnonKey !== 'your_supabase_anon_key' &&
-  supabaseUrl.startsWith('https://') &&
-  supabaseUrl.includes('.supabase.co')
-
-if (!hasValidConfig) {
-  console.error('Invalid or missing Supabase environment variables.')
-  console.error('Current values:', { 
-    url: supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'missing',
-    key: supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'missing'
-  })
-  console.error('Please check your .env file and ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set correctly.')
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing Supabase environment variables. Please check your .env file.')
+  console.error('Required variables: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY')
+  console.error('Copy .env.example to .env and fill in your Supabase project details.')
 }
-export const supabase = hasValidConfig ? createClient(
-  supabaseUrl,
-  supabaseAnonKey,
+
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co', 
+  supabaseAnonKey || 'placeholder-key',
   {
     auth: {
       persistSession: true,
@@ -32,9 +23,8 @@ export const supabase = hasValidConfig ? createClient(
       },
     },
   }
-) : null
+)
 
-export const isSupabaseConfigured = hasValidConfig
 export type Database = {
   public: {
     Tables: {
