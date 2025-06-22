@@ -21,12 +21,11 @@ export const supabase = createClient(
       // Small delay to show success message before navigating
       setTimeout(() => {
         onComplete()
-      }, 1000)
+      }, 1000),
       headers: {
         'X-Client-Info': 'supabase-js-web',
-      },
-    },
-  }
+      }
+    }
 )
 
 export type Database = {
