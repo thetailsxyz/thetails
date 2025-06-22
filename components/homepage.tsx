@@ -12,54 +12,67 @@ import {
   SparklesIcon,
   BrainIcon,
   StarIcon
+  TrendingUpIcon,
+  ClockIcon,
+  UsersIcon,
+  FolderIcon
 } from "lucide-react"
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
 
-const productFeatures = [
+const dashboardMetrics = [
   { 
-    icon: BotIcon, 
-    title: "AI Chatbots", 
+    icon: FolderIcon, 
+    title: "Active Projects", 
     color: "text-blue-400",
     bgColor: "bg-sidebar",
-    description: "Create intelligent conversational AI agents"
+    data: "3",
+    subtitle: "View and manage your projects"
   },
   { 
     icon: MessageSquareIcon, 
-    title: "Live Chat", 
+    title: "Total Conversations", 
     color: "text-green-400",
     bgColor: "bg-sidebar",
-    description: "Real-time customer communication platform"
+    data: "1,284",
+    subtitle: "+15% from last month",
+    trend: true
   },
   { 
     icon: DatabaseIcon, 
-    title: "Knowledge Base", 
+    title: "Knowledge Sources", 
     color: "text-purple-400",
     bgColor: "bg-sidebar",
-    description: "Centralized information management system"
-  },
-  { 
-    icon: BarChartIcon, 
-    title: "Analytics", 
-    color: "text-orange-400",
-    bgColor: "bg-sidebar",
-    description: "Performance insights and conversation metrics"
+    data: "12",
+    subtitle: "Documents & websites in your library"
   },
   { 
     icon: ZapIcon, 
-    title: "Integrations", 
-    color: "text-yellow-400",
+    title: "Message Credits Used", 
+    color: "text-orange-400",
     bgColor: "bg-sidebar",
-    description: "Connect with your favorite tools and platforms"
+    data: "8,500 / 15,000",
+    subtitle: "72% of monthly credits used",
+    progress: 72
   },
   { 
-    icon: SettingsIcon, 
-    title: "Automation", 
+    icon: ClockIcon, 
+    title: "Avg. Response Time", 
     color: "text-cyan-400",
     bgColor: "bg-sidebar",
-    description: "Workflow automation and smart routing"
+    data: "1.8s",
+    subtitle: "AI performance"
+  },
+  { 
+    icon: UsersIcon, 
+    title: "Team Members", 
+    color: "text-pink-400",
+    bgColor: "bg-sidebar",
+    data: "2 / 3",
+    subtitle: "Invite and manage collaborators"
   }
 ]
 
@@ -182,16 +195,39 @@ export function Homepage() {
             </div>
           </div>
 
-          {/* Product Features Grid - Mobile: 2 rows x 3 cols, Desktop: 1 row x 6 cols */}
+          {/* Dashboard Metrics Grid - Mobile: 2 rows x 3 cols, Desktop: 1 row x 6 cols */}
           <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-            {productFeatures.map((feature, index) => (
-              <div key={index} className="flex flex-col items-center">
+            {dashboardMetrics.map((metric, index) => (
+              <div key={index} className="flex flex-col">
                 <Card
-                  className={`bg-sidebar border-0 hover:bg-sidebar-accent transition-colors p-6 aspect-square flex items-center justify-center w-full cursor-default`}
+                  className={`bg-sidebar border-0 hover:bg-sidebar-accent transition-colors p-4 w-full cursor-default`}
                 >
-                  <feature.icon className={`h-8 w-8 ${feature.color}`} />
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={`p-2 rounded-lg ${metric.bgColor}`}>
+                      <metric.icon className={`h-4 w-4 ${metric.color}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-sidebar-foreground/70 font-medium truncate">{metric.title}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-xl font-bold text-sidebar-foreground">{metric.data}</span>
+                      {metric.trend && (
+                        <TrendingUpIcon className="h-3 w-3 text-green-500" />
+                      )}
+                    </div>
+                    
+                    {metric.progress && (
+                      <div className="space-y-1">
+                        <Progress value={metric.progress} className="h-1.5" />
+                      </div>
+                    )}
+                    
+                    <p className="text-xs text-sidebar-foreground/60 leading-tight">{metric.subtitle}</p>
+                  </div>
                 </Card>
-                <p className="text-sm text-white font-medium mt-3 text-center">{feature.title}</p>
               </div>
             ))}
           </div>
