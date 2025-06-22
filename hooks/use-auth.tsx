@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from 'react'
+import { useState, useEffect, createContext, useContext, useCallback } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 
@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = useCallback(async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -49,42 +49,75 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('Error fetching profile:', error)
       return null
     }
-  }
+  }, [])
 
   useEffect(() => {
+    let mounted = true
+
     const initializeAuth = async () => {
-      // Get initial session
-      const { data: { session } } = await supabase.auth.getSession()
-      setSession(session)
-      setUser(session?.user ?? null)
-      
-      if (session?.user) {
-        const profileData = await fetchProfile(session.user.id)
-        setProfile(profileData)
+      try {
+        // Get initial session
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('Error getting session:', error)
+          if (mounted) {
+            setLoading(false)
+          }
+          return
+        }
+
+        if (mounted) {
+          setSession(session)
+          setUser(session?.user ?? null)
+          
+          if (session?.user) {
+            const profileData = await fetchProfile(session.user.id)
+            if (mounted) {
+              setProfile(profileData)
+            }
+          }
+          
+          setLoading(false)
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error)
+        if (mounted) {
+          setLoading(false)
+        }
       }
-      
-      setLoading(false)
     }
 
     initializeAuth()
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return
+
+      console.log('Auth state changed:', event, session?.user?.email)
+      
       setSession(session)
       setUser(session?.user ?? null)
       
       if (session?.user) {
         const profileData = await fetchProfile(session.user.id)
-        setProfile(profileData)
+        if (mounted) {
+          setProfile(profileData)
+        }
       } else {
         setProfile(null)
       }
       
-      setLoading(false)
+      if (mounted) {
+        setLoading(false)
+      }
     })
 
-    return () => subscription.unsubscribe()
-  }, [])
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
+  }, [fetchProfile])
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
