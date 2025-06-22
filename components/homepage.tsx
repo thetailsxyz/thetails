@@ -15,7 +15,11 @@ import {
   TrendingUpIcon,
   ClockIcon,
   UsersIcon,
-  FolderIcon
+  FolderIcon,
+  AlertTriangleIcon,
+  BugIcon,
+  WifiOffIcon,
+  ShieldAlertIcon
 } from "lucide-react"
 
 import { Button } from '@/components/ui/button'
@@ -129,27 +133,36 @@ const recentConversations = [
   }
 ]
 
-const quickActions = [
+const topIssues = [
   {
-    icon: SparklesIcon,
-    title: "Create New Bot",
-    description: "Build a custom AI chatbot with personality and context",
-    color: "text-pink-400",
-    bgColor: "bg-pink-500"
+    id: 1,
+    icon: AlertTriangleIcon,
+    title: "AI Response Delays",
+    description: "Users experiencing slow response times during peak hours",
+    reportCount: 47,
+    severity: "high",
+    color: "text-red-400",
+    bgColor: "bg-red-500"
   },
   {
-    icon: BrainIcon,
-    title: "Import Knowledge",
-    description: "Upload documents and data to train your chatbot",
+    id: 2,
+    icon: BugIcon,
+    title: "Login Authentication Errors",
+    description: "Multiple reports of users unable to authenticate with Google SSO",
+    reportCount: 23,
+    severity: "medium",
     color: "text-blue-400",
     bgColor: "bg-blue-500"
   },
   {
-    icon: ZapIcon,
-    title: "Bot Templates",
-    description: "Start with pre-built chatbot templates for common use cases",
-    color: "text-green-400",
-    bgColor: "bg-green-500"
+    id: 3,
+    icon: WifiOffIcon,
+    title: "Knowledge Base Sync Issues",
+    description: "Documents not updating properly in the knowledge base",
+    reportCount: 18,
+    severity: "medium",
+    color: "text-orange-400",
+    bgColor: "bg-orange-500"
   }
 ]
 
@@ -284,48 +297,46 @@ export function Homepage() {
           {/* Quick Actions */}
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-white">Quick Actions</h2>
+              <h2 className="text-xl font-semibold text-white">Top Issues</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-gray-400 hover:text-white"
+              >
+                View All Issues
+              </Button>
             </div>
             <div className="space-y-4">
-              {quickActions.map((action, index) => (
+              {topIssues.map((issue, index) => (
                 <Card
                   key={index}
                   className="bg-sidebar border-0 hover:bg-sidebar-accent transition-colors cursor-pointer p-6"
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`${action.bgColor} p-3 rounded-lg flex-shrink-0`}>
-                      <action.icon className="h-6 w-6 text-white" />
+                    <div className={`${issue.bgColor} p-3 rounded-lg flex-shrink-0`}>
+                      <issue.icon className="h-6 w-6 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-sidebar-foreground font-semibold mb-2">{action.title}</h3>
-                      <p className="text-sidebar-foreground/70 text-sm">{action.description}</p>
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-sidebar-foreground font-semibold">{issue.title}</h3>
+                        <div className="flex items-center gap-2">
+                          <Badge 
+                            variant="outline" 
+                            className={`text-xs ${
+                              issue.severity === 'high' 
+                                ? 'bg-red-500/10 text-red-500 border-red-500/20' 
+                                : 'bg-orange-500/10 text-orange-500 border-orange-500/20'
+                            }`}
+                          >
+                            {issue.reportCount} reports
+                          </Badge>
+                        </div>
+                      </div>
+                      <p className="text-sidebar-foreground/70 text-sm">{issue.description}</p>
                     </div>
                   </div>
                 </Card>
               ))}
-              
-              {/* Featured Templates */}
-              <Card className="bg-sidebar border-0 p-6 border border-blue-500/20">
-                <div className="flex items-start gap-4">
-                  <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-3 rounded-lg flex-shrink-0">
-                    <StarIcon className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="text-sidebar-foreground font-semibold">Featured Templates</h3>
-                      <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-xs">
-                        New
-                      </Badge>
-                    </div>
-                    <p className="text-sidebar-foreground/70 text-sm mb-3">
-                      Explore our newest collection of industry-specific chatbot templates
-                    </p>
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
-                      Browse Templates
-                    </Button>
-                  </div>
-                </div>
-              </Card>
             </div>
           </div>
         </div>
