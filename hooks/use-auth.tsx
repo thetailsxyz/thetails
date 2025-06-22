@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext, useCallback } from 'react'
+import { useState, useEffect, createContext, useContext } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 
@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchProfile = useCallback(async (userId: string) => {
+  const fetchProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -49,32 +49,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('Error fetching profile:', error)
       return null
     }
-  }, [])
+  }
 
   useEffect(() => {
     let mounted = true
 
     const initializeAuth = async () => {
       try {
-        // Get initial session
-        const { data: { session }, error } = await supabase.auth.getSession()
+        console.log('Initializing auth...')
+        
+        // Get initial session with timeout
+        const sessionPromise = supabase.auth.getSession()
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Session timeout')), 10000)
+        )
+        
+        const { data: { session }, error } = await Promise.race([
+          sessionPromise,
+          timeoutPromise
+        ]) as any
         
         if (error) {
           console.error('Error getting session:', error)
-          if (mounted) {
-            setLoading(false)
-          }
-          return
         }
 
         if (mounted) {
+          console.log('Setting initial session:', session?.user?.email || 'No user')
           setSession(session)
           setUser(session?.user ?? null)
           
+          // Only try to fetch profile if we have a user and the profiles table exists
           if (session?.user) {
-            const profileData = await fetchProfile(session.user.id)
-            if (mounted) {
-              setProfile(profileData)
+            try {
+              const profileData = await fetchProfile(session.user.id)
+              if (mounted) {
+                setProfile(profileData)
+              }
+            } catch (profileError) {
+              console.warn('Could not fetch profile, continuing without it:', profileError)
+              // Continue without profile - this is not critical
             }
           }
           
@@ -83,6 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (error) {
         console.error('Error initializing auth:', error)
         if (mounted) {
+          // Even if there's an error, stop loading so the app can continue
           setLoading(false)
         }
       }
@@ -94,15 +108,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return
 
-      console.log('Auth state changed:', event, session?.user?.email)
+      console.log('Auth state changed:', event, session?.user?.email || 'No user')
       
       setSession(session)
       setUser(session?.user ?? null)
       
       if (session?.user) {
-        const profileData = await fetchProfile(session.user.id)
-        if (mounted) {
-          setProfile(profileData)
+        try {
+          const profileData = await fetchProfile(session.user.id)
+          if (mounted) {
+            setProfile(profileData)
+          }
+        } catch (profileError) {
+          console.warn('Could not fetch profile during auth change:', profileError)
+          // Continue without profile
         }
       } else {
         setProfile(null)
@@ -117,7 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       mounted = false
       subscription.unsubscribe()
     }
-  }, [fetchProfile])
+  }, []) // No dependencies to prevent infinite loops
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
