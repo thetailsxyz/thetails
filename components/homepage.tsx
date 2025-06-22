@@ -11,7 +11,7 @@ import {
   ZapIcon,
   SparklesIcon,
   BrainIcon,
-  StarIcon
+  StarIcon,
   TrendingUpIcon,
   ClockIcon,
   UsersIcon,
