@@ -14,6 +14,7 @@ import {
 import { NavMain } from '@/components/nav-main'
 import { NavSecondary } from '@/components/nav-secondary'
 import { NavUser } from '@/components/nav-user'
+import { useAuth } from '@/hooks/use-auth'
 import {
   Sidebar,
   SidebarContent,
@@ -30,11 +31,17 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 }
 
 export function AppSidebar({ currentView = 'dashboard', onNavigate, ...props }: AppSidebarProps) {
+  const { user, profile } = useAuth()
+
   const data = {
-    user: {
-      name: "shadcn",
-      email: "m@example.com",
-      avatar: "/avatars/shadcn.jpg",
+    user: user ? {
+      name: profile?.full_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+      email: user.email || 'user@example.com',
+      avatar: profile?.avatar_url || user.user_metadata?.avatar_url || "/avatars/default.jpg",
+    } : {
+      name: "Guest",
+      email: "guest@example.com", 
+      avatar: "/avatars/default.jpg",
     },
     navMain: [
       {
